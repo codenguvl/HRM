@@ -21,6 +21,8 @@
     <link href="assets/css/sb-admin-2.css" rel="stylesheet">
     <!-- Custom Fonts -->
     <link href="assets/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -150,7 +152,7 @@
 
                         <li
                             <?php echo (CURRENT_PAGE == "giang_vien.php" || CURRENT_PAGE == "them_giang_vien.php") ? 'class="active"' : ''; ?>>
-                            <a href="#"><i class="fa fa-chalkboard-teacher fa-fw"></i> Giang vien<span
+                            <a href="#"><i class="fa fa-chalkboard-teacher fa-fw"></i> Giảng viên<span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -162,13 +164,23 @@
                             </ul>
                         </li>
 
-                        <li <?php echo (CURRENT_PAGE == "phan_cong_giang_vien.php") ? 'class="active"' : ''; ?>>
-                            <a href="#"><i class="fa fa-user-tag fa-fw"></i> Phan cong giang vien</a>
+                        <li
+                            <?php echo (CURRENT_PAGE == "phan_cong_giang_vien.php" || CURRENT_PAGE == "them_phan_cong_giang_vien.php") ? 'class="active"' : ''; ?>>
+                            <a href="#"><i class="fa fa-user fa-fw"></i> Phân công giảng viên<span
+                                    class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="phan_cong_giang_vien.php"><i class="fa fa-list fa-fw"></i>List all</a>
+                                </li>
+                                <li>
+                                    <a href="them_phan_cong_giang_vien.php"><i class="fa fa-plus fa-fw"></i>Add New</a>
+                                </li>
+                            </ul>
                         </li>
 
                         <li
                             <?php echo (CURRENT_PAGE == "dang_ky_dao_tao.php" || CURRENT_PAGE == "them_dang_ky_dao_tao.php") ? 'class="active"' : ''; ?>>
-                            <a href="#"><i class="fa fa-clipboard-list fa-fw"></i> Dang ky dao tao<span
+                            <a href="#"><i class="fa fa-clipboard fa-fw"></i> Đăng ký đào tạo<span
                                     class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -179,6 +191,7 @@
                                 </li>
                             </ul>
                         </li>
+
 
                         <li
                             <?php echo (CURRENT_PAGE == "danh_gia_dao_tao.php" || CURRENT_PAGE == "them_danh_gia_dao_tao.php") ? 'class="active"' : ''; ?>>

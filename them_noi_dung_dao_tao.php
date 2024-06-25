@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $required_fields = array('chuong_trinh_id', 'loai_noi_dung', 'tieu_de', 'mo_ta', 'duong_dan_tap_tin', 'chu_de');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
-            echo 'Missing required field: ' . $field;
+            echo 'Thiếu trường bắt buộc: ' . $field;
             exit();
         }
     }
@@ -17,29 +17,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        die("Kết nối thất bại: " . $conn->connect_error);
     }
 
     $sql = "INSERT INTO noi_dung_dao_tao (chuong_trinh_id, loai_noi_dung, tieu_de, mo_ta, duong_dan_tap_tin, chu_de) VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
-        echo 'Error preparing statement: ' . $conn->error;
+        echo 'Lỗi khi chuẩn bị câu lệnh: ' . $conn->error;
         exit();
     }
+
     $stmt->bind_param("isssss", $data_to_store['chuong_trinh_id'], $data_to_store['loai_noi_dung'], $data_to_store['tieu_de'], $data_to_store['mo_ta'], $data_to_store['duong_dan_tap_tin'], $data_to_store['chu_de']);
 
-    if ($stmt->execute() === true) {
-        $_SESSION['success'] = "Nội dung đào tạo đã được thêm thành công!";
+    try {
+        if ($stmt->execute() === true) {
+            $_SESSION['success'] = "Nội dung đào tạo đã được thêm thành công!";
+            header('location: noi_dung_dao_tao.php');
+            exit();
+        } else {
+            echo 'Thêm không thành công: ' . $stmt->error;
+            exit();
+        }
+    } catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1062) {
+            $_SESSION['failure'] = "Không thể thêm nội dung đào tạo: Nội dung đã tồn tại.";
+        } elseif ($e->getCode() == 1452) {
+            $_SESSION['failure'] = "Không thể thêm nội dung đào tạo: Giá trị không hợp lệ cho một trong các trường.";
+        } else {
+            $_SESSION['failure'] = "Đã xảy ra lỗi khi thêm nội dung đào tạo: " . $e->getMessage();
+        }
         header('location: noi_dung_dao_tao.php');
         exit();
-    } else {
-        echo 'Insert failed: ' . $stmt->error;
-        exit();
+    } finally {
+        $stmt->close();
+        $conn->close();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 
 $edit = false;

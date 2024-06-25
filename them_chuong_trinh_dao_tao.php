@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $required_fields = array('ten_chuong_trinh', 'doi_tuong', 'thoi_luong', 'hinh_thuc');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
-            echo 'Missing required field: ' . $field;
+            echo 'Thiếu trường bắt buộc: ' . $field;
             exit();
         }
     }
@@ -17,30 +17,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        die("Kết nối thất bại: " . $conn->connect_error);
     }
 
     $sql = "INSERT INTO chuong_trinh_dao_tao (ten_chuong_trinh, doi_tuong, thoi_luong, hinh_thuc) VALUES (?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
-        echo 'Error preparing statement: ' . $conn->error;
+        echo 'Lỗi khi chuẩn bị câu lệnh: ' . $conn->error;
         exit();
     }
+
     $stmt->bind_param("ssss", $data_to_store['ten_chuong_trinh'], $data_to_store['doi_tuong'], $data_to_store['thoi_luong'], $data_to_store['hinh_thuc']);
 
-
-    if ($stmt->execute() === true) {
-        $_SESSION['success'] = "Chương trình đào tạo đã được thêm thành công!";
+    try {
+        if ($stmt->execute() === true) {
+            $_SESSION['success'] = "Chương trình đào tạo đã được thêm thành công!";
+            header('location: chuong_trinh_dao_tao.php');
+            exit();
+        } else {
+            echo 'Thêm không thành công: ' . $stmt->error;
+            exit();
+        }
+    } catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1062) {
+            $_SESSION['failure'] = "Không thể thêm chương trình đào tạo: Chương trình đã tồn tại.";
+        } elseif ($e->getCode() == 1452) {
+            $_SESSION['failure'] = "Không thể thêm chương trình đào tạo: Giá trị không hợp lệ cho một trong các trường.";
+        } else {
+            $_SESSION['failure'] = "Đã xảy ra lỗi khi thêm chương trình đào tạo: " . $e->getMessage();
+        }
         header('location: chuong_trinh_dao_tao.php');
         exit();
-    } else {
-        echo 'Insert failed: ' . $stmt->error;
-        exit();
+    } finally {
+        $stmt->close();
+        $conn->close();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 
 $edit = false;

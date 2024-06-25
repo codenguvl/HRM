@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 18, 2024 at 12:44 PM
+-- Generation Time: Jun 25, 2024 at 04:20 PM
 -- Server version: 5.7.17-log
 -- PHP Version: 5.6.30
 
@@ -39,7 +39,8 @@ CREATE TABLE `chuong_trinh_dao_tao` (
 --
 
 INSERT INTO `chuong_trinh_dao_tao` (`chuong_trinh_id`, `ten_chuong_trinh`, `doi_tuong`, `thoi_luong`, `hinh_thuc`) VALUES
-(1, 'Chương trình 2', 'Đối tượng 1', '120p', 'Online');
+(1, 'Chương trình 2', 'Đối tượng 1', '120p', 'Online'),
+(2, 'Chương trình 1', '1', '1', '1');
 
 -- --------------------------------------------------------
 
@@ -54,13 +55,6 @@ CREATE TABLE `dang_ky_dao_tao` (
   `ngay_dang_ky` date DEFAULT NULL,
   `trang_thai` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `dang_ky_dao_tao`
---
-
-INSERT INTO `dang_ky_dao_tao` (`dang_ky_id`, `nhan_vien_id`, `lich_trinh_id`, `ngay_dang_ky`, `trang_thai`) VALUES
-(2, 4, 1, '2024-06-15', '1');
 
 -- --------------------------------------------------------
 
@@ -138,7 +132,7 @@ CREATE TABLE `nhan_vien` (
 --
 
 INSERT INTO `nhan_vien` (`nhan_vien_id`, `ten`, `phong_ban`, `vi_tri`, `email`, `so_dien_thoai`) VALUES
-(4, 'Ngô Thanh Tân', '123', '123', 'nttan2001042@student.ctuet.edu.vn', '09999999999');
+(5, 'Ngô Thanh Tân', '1', '1', 'tripvang123@gmail.com', '09999999999');
 
 -- --------------------------------------------------------
 
@@ -154,13 +148,6 @@ CREATE TABLE `nhu_cau_dao_tao` (
   `nhan_xet_quan_ly` text COLLATE utf8_unicode_ci,
   `ket_qua_khao_sat` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `nhu_cau_dao_tao`
---
-
-INSERT INTO `nhu_cau_dao_tao` (`nhu_cau_id`, `nhan_vien_id`, `loai_ky_nang`, `muc_ky_nang`, `nhan_xet_quan_ly`, `ket_qua_khao_sat`) VALUES
-(2, 4, 'Kỹ năng mềmm', '3', 'Tuyệt vời', '10đ');
 
 -- --------------------------------------------------------
 
@@ -178,13 +165,6 @@ CREATE TABLE `noi_dung_dao_tao` (
   `chu_de` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `noi_dung_dao_tao`
---
-
-INSERT INTO `noi_dung_dao_tao` (`noi_dung_id`, `chuong_trinh_id`, `loai_noi_dung`, `tieu_de`, `mo_ta`, `duong_dan_tap_tin`, `chu_de`) VALUES
-(1, 1, '1', '222', '1', '1', '1');
-
 -- --------------------------------------------------------
 
 --
@@ -192,8 +172,9 @@ INSERT INTO `noi_dung_dao_tao` (`noi_dung_id`, `chuong_trinh_id`, `loai_noi_dung
 --
 
 CREATE TABLE `phan_cong_giang_vien` (
-  `chuong_trinh_id` int(11) NOT NULL,
-  `giang_vien_id` int(11) NOT NULL
+  `phan_cong_id` int(11) NOT NULL,
+  `chuong_trinh_id` int(11) DEFAULT NULL,
+  `giang_vien_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -283,7 +264,8 @@ ALTER TABLE `noi_dung_dao_tao`
 -- Indexes for table `phan_cong_giang_vien`
 --
 ALTER TABLE `phan_cong_giang_vien`
-  ADD PRIMARY KEY (`chuong_trinh_id`,`giang_vien_id`),
+  ADD PRIMARY KEY (`phan_cong_id`),
+  ADD KEY `chuong_trinh_id` (`chuong_trinh_id`),
   ADD KEY `giang_vien_id` (`giang_vien_id`);
 
 --
@@ -301,17 +283,17 @@ ALTER TABLE `tai_khoan`
 -- AUTO_INCREMENT for table `chuong_trinh_dao_tao`
 --
 ALTER TABLE `chuong_trinh_dao_tao`
-  MODIFY `chuong_trinh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `chuong_trinh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `dang_ky_dao_tao`
 --
 ALTER TABLE `dang_ky_dao_tao`
-  MODIFY `dang_ky_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `dang_ky_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `danh_gia_dao_tao`
 --
 ALTER TABLE `danh_gia_dao_tao`
-  MODIFY `danh_gia_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `danh_gia_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `giang_vien`
 --
@@ -326,17 +308,22 @@ ALTER TABLE `lich_trinh_dao_tao`
 -- AUTO_INCREMENT for table `nhan_vien`
 --
 ALTER TABLE `nhan_vien`
-  MODIFY `nhan_vien_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `nhan_vien_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `nhu_cau_dao_tao`
 --
 ALTER TABLE `nhu_cau_dao_tao`
-  MODIFY `nhu_cau_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `nhu_cau_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `noi_dung_dao_tao`
 --
 ALTER TABLE `noi_dung_dao_tao`
   MODIFY `noi_dung_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT for table `phan_cong_giang_vien`
+--
+ALTER TABLE `phan_cong_giang_vien`
+  MODIFY `phan_cong_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `tai_khoan`
 --

@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+        die("Kết nối thất bại: " . $conn->connect_error);
     }
 
     $sql = "INSERT INTO lich_trinh_dao_tao (chuong_trinh_id, ngay_bat_dau, ngay_ket_thuc, dia_diem) VALUES (?, ?, ?, ?)";
@@ -29,17 +29,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->bind_param("isss", $data_to_store['chuong_trinh_id'], $data_to_store['ngay_bat_dau'], $data_to_store['ngay_ket_thuc'], $data_to_store['dia_diem']);
 
-    if ($stmt->execute() === true) {
-        $_SESSION['success'] = "Lịch trình đào tạo đã được thêm thành công!";
+    try {
+        if ($stmt->execute() === true) {
+            $_SESSION['success'] = "Lịch trình đào tạo đã được thêm thành công!";
+            header('location: lich_trinh_dao_tao.php');
+            exit();
+        } else {
+            echo 'Thêm không thành công: ' . $stmt->error;
+            exit();
+        }
+    } catch (mysqli_sql_exception $e) {
+        if ($e->getCode() == 1062) {
+            $_SESSION['failure'] = "Không thể thêm lịch trình đào tạo: Lịch trình đã tồn tại.";
+        } elseif ($e->getCode() == 1452) {
+            $_SESSION['failure'] = "Không thể thêm lịch trình đào tạo: Giá trị không hợp lệ cho một trong các trường.";
+        } else {
+            $_SESSION['failure'] = "Đã xảy ra lỗi khi thêm lịch trình đào tạo: " . $e->getMessage();
+        }
         header('location: lich_trinh_dao_tao.php');
         exit();
-    } else {
-        echo 'Insert failed: ' . $stmt->error;
-        exit();
+    } finally {
+        $stmt->close();
+        $conn->close();
     }
-
-    $stmt->close();
-    $conn->close();
 }
 
 $edit = false;
@@ -63,7 +75,7 @@ require_once BASE_PATH . '/includes/header.php';
             rules: {
                 chuong_trinh_id: {
                     required: true,
-                    number: true
+                    digits: true
                 },
                 ngay_bat_dau: {
                     required: true,
