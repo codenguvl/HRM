@@ -1,16 +1,26 @@
 <fieldset>
     <div class="form-group">
         <label for="giang_vien_id">Giảng viên ID *</label>
-        <input type="number" name="giang_vien_id"
-            value="<?php echo isset($assignment['giang_vien_id']) ? htmlspecialchars($assignment['giang_vien_id'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Giảng viên ID" class="form-control" required="required" id="giang_vien_id">
+        <select name="chuong_trinh_id" class="form-control" required>
+            <option value="">Chọn chương trình đào tạo</option>
+            <?php foreach ($chuong_trinh_dao_tao_list as $chuong_trinh): ?>
+                <option value="<?php echo $chuong_trinh['chuong_trinh_id']; ?>">
+                    <?php echo htmlspecialchars($chuong_trinh['ten_chuong_trinh'], ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="chuong_trinh_id">Chương trình đào tạo ID *</label>
-        <input type="number" name="chuong_trinh_id"
-            value="<?php echo isset($assignment['chuong_trinh_id']) ? htmlspecialchars($assignment['chuong_trinh_id'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Chương trình đào tạo ID" class="form-control" required="required" id="chuong_trinh_id">
+        <select name="giang_vien_id" class="form-control" required>
+            <option value="">Chọn giảng viên</option>
+            <?php foreach ($giang_vien_list as $giang_vien): ?>
+                <option value="<?php echo $giang_vien['giang_vien_id']; ?>">
+                    <?php echo htmlspecialchars($giang_vien['ten'], ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <div class="form-group text-center">

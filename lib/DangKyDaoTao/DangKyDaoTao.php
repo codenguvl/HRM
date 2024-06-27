@@ -19,8 +19,8 @@ class DangKyDaoTao
     {
         $ordering = [
             'dang_ky_id' => 'ID',
-            'nhan_vien_id' => 'Nhân viên ID',
-            'lich_trinh_id' => 'Lịch trình ID',
+            'tai_khoan_id' => 'Tài khoản ID',
+            'chuong_trinh_id' => 'Chương trình ID',
             'ngay_dang_ky' => 'Ngày đăng ký',
             'trang_thai' => 'Trạng thái',
         ];

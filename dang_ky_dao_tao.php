@@ -25,11 +25,11 @@ if (!$order_by) {
 }
 
 $db = getDbInstance();
-$select = array('dang_ky_id', 'nhan_vien_id', 'lich_trinh_id', 'trang_thai', 'ngay_dang_ky');
+$select = array('dang_ky_id', 'tai_khoan_id', 'chuong_trinh_id', 'trang_thai', 'ngay_dang_ky');
 
 if ($search_string) {
-    $db->where('nhan_vien_id', '%' . $search_string . '%', 'like');
-    $db->orwhere('lich_trinh_id', '%' . $search_string . '%', 'like');
+    $db->where('tai_khoan_id', '%' . $search_string . '%', 'like');
+    $db->orwhere('chuong_trinh_id', '%' . $search_string . '%', 'like');
 }
 
 if ($order_by) {
@@ -49,12 +49,12 @@ include BASE_PATH . '/includes/header.php';
         <div class="col-lg-6">
             <h1 class="page-header">Đăng ký Đào tạo</h1>
         </div>
-        <div class="col-lg-6">
+        <!-- <div class="col-lg-6">
             <div class="page-action-links text-right">
                 <a href="them_dang_ky_dao_tao.php?operation=create" class="btn btn-success"><i
                         class="glyphicon glyphicon-plus"></i> Thêm mới</a>
             </div>
-        </div>
+        </div> -->
     </div>
     <?php include BASE_PATH . '/includes/flash_messages.php'; ?>
 
@@ -97,7 +97,7 @@ include BASE_PATH . '/includes/header.php';
             <tr>
                 <th width="5%">ID</th>
                 <th width="25%">Nhân viên</th>
-                <th width="25%">Lịch trình đào tạo</th>
+                <th width="25%">Chương trình đào tạo</th>
                 <th width="20%">Trạng thái</th>
                 <th width="15%">Ngày đăng ký</th>
                 <th width="10%">Hành động</th>
@@ -105,44 +105,49 @@ include BASE_PATH . '/includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-                <tr>
-                    <td><?php echo $row['dang_ky_id']; ?></td>
-                    <td><?php echo xss_clean($row['nhan_vien_id']); ?></td>
-                    <td><?php echo xss_clean($row['lich_trinh_id']); ?></td>
-                    <td><?php echo xss_clean($row['trang_thai']); ?></td>
-                    <td><?php echo xss_clean($row['ngay_dang_ky']); ?></td>
-                    <td>
+            <tr>
+                <td><?php echo $row['dang_ky_id']; ?></td>
+                <td><?php echo xss_clean(getUserNameFromTaiKhoanId($row['tai_khoan_id'])); ?></td>
+                <td><?php echo xss_clean(getTenChuongTrinhFromChuongTrinhId($row['chuong_trinh_id'])); ?></td>
+                <td><?php echo xss_clean($row['trang_thai']); ?></td>
+                <td><?php echo xss_clean($row['ngay_dang_ky']); ?></td>
+                <td>
+                    <div class="flex">
                         <a href="sua_dang_ky_dao_tao.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>&operation=edit"
                             class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
                             data-target="#confirm-delete-<?php echo $row['dang_ky_id']; ?>"><i
                                 class="glyphicon glyphicon-trash"></i></a>
-                    </td>
-                </tr>
-                <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="confirm-delete-<?php echo $row['dang_ky_id']; ?>" role="dialog">
-                    <div class="modal-dialog">
-                        <form action="xoa_dang_ky_dao_tao.php" method="POST">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Xác nhận</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" name="del_id" id="del_id"
-                                        value="<?php echo $row['dang_ky_id']; ?>">
-                                    <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-default pull-left">Có</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                                </div>
-                            </div>
-                        </form>
+                        <a href="phe_duyet_dang_ky.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>"
+                            class="btn btn-success"><i class="glyphicon glyphicon-check"></i> Phê duyệt</a>
                     </div>
+                </td>
+
+            </tr>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="confirm-delete-<?php echo $row['dang_ky_id']; ?>" role="dialog">
+                <div class="modal-dialog">
+                    <form action="xoa_dang_ky_dao_tao.php" method="POST">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Xác nhận</h4>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="del_id" id="del_id"
+                                    value="<?php echo $row['dang_ky_id']; ?>">
+                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-default pull-left">Có</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <!-- //Delete Confirmation Modal -->
+            </div>
+            <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>
@@ -155,4 +160,34 @@ include BASE_PATH . '/includes/header.php';
     <!-- //Pagination -->
 </div>
 <!-- //Main container -->
+<?php
+function getUserNameFromTaiKhoanId($id_tai_khoan)
+{
+    $db = getDbInstance();
+    $db->where('id_tai_khoan', $id_tai_khoan);
+    $nhan_vien = $db->getOne('tai_khoan', 'ten');
+
+    if ($nhan_vien) {
+        return $nhan_vien['ten'];
+    } else {
+        return 'Không xác định';
+    }
+}
+function getTenChuongTrinhFromChuongTrinhId($chuong_trinh_id)
+{
+    $db = getDbInstance();
+    $db->where('chuong_trinh_id', $chuong_trinh_id);
+    $chuong_trinh = $db->getOne('chuong_trinh_dao_tao', 'ten_chuong_trinh');
+
+    if ($chuong_trinh) {
+        return $chuong_trinh['ten_chuong_trinh'];
+    } else {
+        return 'Không xác định';
+    }
+}
+
+
+
+?>
+
 <?php include BASE_PATH . '/includes/footer.php'; ?>

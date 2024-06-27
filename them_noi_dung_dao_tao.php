@@ -3,6 +3,22 @@ session_start();
 require_once './config/config.php';
 require_once './includes/auth_validate.php';
 
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
+
+function getLoaiNoiDungOptions()
+{
+    return [
+        'theo_chuong_trinh' => 'Theo chương trình đào tạo',
+        'theo_chu_de' => 'Theo chủ đề'
+    ];
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 

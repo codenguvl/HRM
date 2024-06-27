@@ -32,6 +32,8 @@ if ($edit) {
     $chuong_trinh_dao_tao = $db->getOne("chuong_trinh_dao_tao");
 }
 
+
+
 include_once 'includes/header.php';
 ?>
 <div id="page-wrapper">

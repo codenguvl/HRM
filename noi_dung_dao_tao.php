@@ -21,6 +21,14 @@ if (!$order_by) {
     $order_by = 'Desc';
 }
 
+function getLoaiNoiDungOptions()
+{
+    return [
+        'theo_chuong_trinh' => 'Theo chương trình đào tạo',
+        'theo_chu_de' => 'Theo chủ đề'
+    ];
+}
+
 $db = getDbInstance();
 $select = array('noi_dung_id', 'chuong_trinh_id', 'loai_noi_dung', 'tieu_de', 'mo_ta', 'duong_dan_tap_tin', 'chu_de');
 
@@ -115,46 +123,49 @@ include BASE_PATH . '/includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-                <tr>
-                    <td><?php echo $row['noi_dung_id']; ?></td>
-                    <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
-                    <td><?php echo xss_clean($row['loai_noi_dung']); ?></td>
-                    <td><?php echo xss_clean($row['tieu_de']); ?></td>
-                    <td><?php echo xss_clean($row['mo_ta']); ?></td>
-                    <td><?php echo xss_clean($row['duong_dan_tap_tin']); ?></td>
-                    <td><?php echo xss_clean($row['chu_de']); ?></td>
-                    <td>
+            <tr>
+                <td><?php echo $row['noi_dung_id']; ?></td>
+                <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
+                <td><?php echo isset($row['loai_noi_dung']) ? getLoaiNoiDungOptions()[$row['loai_noi_dung']] : ''; ?>
+                </td>
+                <td><?php echo xss_clean($row['tieu_de']); ?></td>
+                <td><?php echo xss_clean($row['mo_ta']); ?></td>
+                <td><?php echo xss_clean($row['duong_dan_tap_tin']); ?></td>
+                <td><?php echo xss_clean($row['chu_de']); ?></td>
+                <td>
+                    <div class="flex">
                         <a href="sua_noi_dung_dao_tao.php?noi_dung_id=<?php echo $row['noi_dung_id']; ?>&operation=edit"
                             class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
                             data-target="#confirm-delete-<?php echo $row['noi_dung_id']; ?>"><i
                                 class="glyphicon glyphicon-trash"></i></a>
-                    </td>
-                </tr>
-                <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="confirm-delete-<?php echo $row['noi_dung_id']; ?>" role="dialog">
-                    <div class="modal-dialog">
-                        <form action="xoa_noi_dung_dao_tao.php" method="POST">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Xác nhận</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" name="del_id" id="del_id"
-                                        value="<?php echo $row['noi_dung_id']; ?>">
-                                    <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-default pull-left">Có</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                                </div>
-                            </div>
-                        </form>
                     </div>
+                </td>
+            </tr>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="confirm-delete-<?php echo $row['noi_dung_id']; ?>" role="dialog">
+                <div class="modal-dialog">
+                    <form action="xoa_noi_dung_dao_tao.php" method="POST">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Xác nhận</h4>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="del_id" id="del_id"
+                                    value="<?php echo $row['noi_dung_id']; ?>">
+                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-default pull-left">Có</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <!-- //Delete Confirmation Modal -->
+            </div>
+            <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>

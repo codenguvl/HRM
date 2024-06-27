@@ -1,9 +1,15 @@
 <fieldset>
     <div class="form-group">
         <label for="chuong_trinh_id">Chương trình ID *</label>
-        <input type="number" name="chuong_trinh_id"
-            value="<?php echo isset($lich_trinh['chuong_trinh_id']) ? htmlspecialchars($lich_trinh['chuong_trinh_id'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Chương trình ID" class="form-control" required="required" id="chuong_trinh_id">
+        <select name="chuong_trinh_id" class="form-control" required="required" id="chuong_trinh_id">
+            <?php
+            $chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+            foreach ($chuong_trinh_dao_tao_list as $chuong_trinh) {
+                $selected = (isset($noi_dung_dao_tao['chuong_trinh_id']) && $noi_dung_dao_tao['chuong_trinh_id'] == $chuong_trinh['chuong_trinh_id']) ? 'selected' : '';
+                echo "<option value='{$chuong_trinh['chuong_trinh_id']}' $selected>{$chuong_trinh['ten_chuong_trinh']}</option>";
+            }
+            ?>
+        </select>
     </div>
 
     <div class="form-group">

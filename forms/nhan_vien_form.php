@@ -34,6 +34,35 @@
             placeholder="987654321" class="form-control" type="text" id="so_dien_thoai">
     </div>
 
+    <div class="form-group">
+        <label for="ten_dang_nhap">Tên đăng nhập *</label>
+        <input type="text" name="ten_dang_nhap"
+            value="<?php echo isset($employee['ten_dang_nhap']) ? htmlspecialchars($employee['ten_dang_nhap'], ENT_QUOTES, 'UTF-8') : ''; ?>"
+            placeholder="Tên đăng nhập" class="form-control" required="required" id="ten_dang_nhap">
+    </div>
+
+    <div class="form-group">
+        <label for="mat_khau">Mật khẩu *</label>
+        <input type="password" name="mat_khau"
+            value="<?php echo isset($employee['mat_khau']) ? htmlspecialchars($employee['mat_khau'], ENT_QUOTES, 'UTF-8') : ''; ?>"
+            placeholder="Mật khẩu" class="form-control" required="required" id="mat_khau">
+    </div>
+
+    <div class="form-group">
+        <label for="vai_tro">Vai trò *</label>
+        <select name="vai_tro" class="form-control" required="required" id="vai_tro">
+            <option value="TaiKhoan"
+                <?php echo (isset($employee['vai_tro']) && $employee['vai_tro'] == 'Quản lý') ? 'selected' : ''; ?>>Quản
+                lý</option>
+            <option value="NhanVien"
+                <?php echo (isset($employee['vai_tro']) && $employee['vai_tro'] == 'NhanVien') ? 'selected' : ''; ?>>
+                Nhân viên</option>
+            <option value="GiangVien"
+                <?php echo (isset($employee['vai_tro']) && $employee['vai_tro'] == 'GiangVien') ? 'selected' : ''; ?>>
+                Giảng viên</option>
+        </select>
+    </div>
+
     <div class="form-group text-center">
         <label></label>
         <button type="submit" class="btn btn-warning">Lưu <span class="glyphicon glyphicon-send"></span></button>

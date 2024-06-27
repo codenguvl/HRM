@@ -3,6 +3,23 @@ session_start();
 require_once './config/config.php';
 require_once BASE_PATH . '/includes/auth_validate.php';
 
+function getGiangVienList()
+{
+    $db = getDbInstance();
+    $giang_vien = $db->get('giang_vien', null, ['giang_vien_id', 'ten']);
+    return $giang_vien;
+}
+
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
+
+$giang_vien_list = getGiangVienList();
+$chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_map('trim', $_POST);
     $required_fields = array('chuong_trinh_id', 'giang_vien_id');
@@ -66,15 +83,7 @@ require_once BASE_PATH . '/includes/header.php';
         </div>
     </div>
     <form class="form" action="" method="post" id="phan_cong_form">
-        <div class="form-group">
-            <label for="chuong_trinh_id">Chương trình đào tạo ID:</label>
-            <input type="text" class="form-control" id="chuong_trinh_id" name="chuong_trinh_id" required>
-        </div>
-        <div class="form-group">
-            <label for="giang_vien_id">Giảng viên ID:</label>
-            <input type="text" class="form-control" id="giang_vien_id" name="giang_vien_id" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Thêm mới</button>
+        <?php include_once ('./forms/phan_cong_giang_vien_form.php'); ?>
     </form>
 </div>
 

@@ -103,44 +103,44 @@ include BASE_PATH . '/includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-                <tr>
-                    <td><?php echo $row['lich_trinh_id']; ?></td>
-                    <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
-                    <td><?php echo xss_clean($row['ngay_bat_dau']); ?></td>
-                    <td><?php echo xss_clean($row['ngay_ket_thuc']); ?></td>
-                    <td><?php echo xss_clean($row['dia_diem']); ?></td>
-                    <td>
-                        <a href="sua_lich_trinh_dao_tao.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>&operation=edit"
-                            class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                        <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                            data-target="#confirm-delete-<?php echo $row['lich_trinh_id']; ?>"><i
-                                class="glyphicon glyphicon-trash"></i></a>
-                    </td>
-                </tr>
-                <!-- Delete Confirmation Modal -->
-                <div class="modal fade" id="confirm-delete-<?php echo $row['lich_trinh_id']; ?>" role="dialog">
-                    <div class="modal-dialog">
-                        <form action="xoa_lich_trinh_dao_tao.php" method="POST">
-                            <!-- Modal content -->
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">Xác nhận</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <input type="hidden" name="del_id" id="del_id"
-                                        value="<?php echo $row['lich_trinh_id']; ?>">
-                                    <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-default pull-left">Có</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                                </div>
+            <tr>
+                <td><?php echo $row['lich_trinh_id']; ?></td>
+                <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
+                <td><?php echo xss_clean($row['ngay_bat_dau']); ?></td>
+                <td><?php echo xss_clean($row['ngay_ket_thuc']); ?></td>
+                <td><?php echo xss_clean($row['dia_diem']); ?></td>
+                <td>
+                    <a href="sua_lich_trinh_dao_tao.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>&operation=edit"
+                        class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                    <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
+                        data-target="#confirm-delete-<?php echo $row['lich_trinh_id']; ?>"><i
+                            class="glyphicon glyphicon-trash"></i></a>
+                </td>
+            </tr>
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="confirm-delete-<?php echo $row['lich_trinh_id']; ?>" role="dialog">
+                <div class="modal-dialog">
+                    <form action="xoa_lich_trinh_dao_tao.php" method="POST">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Xác nhận</h4>
                             </div>
-                        </form>
-                    </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="del_id" id="del_id"
+                                    value="<?php echo $row['lich_trinh_id']; ?>">
+                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-default pull-left">Có</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-                <!-- //Delete Confirmation Modal -->
+            </div>
+            <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>

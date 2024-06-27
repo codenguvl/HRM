@@ -3,7 +3,7 @@ session_start();
 require_once 'includes/auth_validate.php';
 require_once './config/config.php';
 
-$del_id = filter_input(INPUT_POST, 'del_id');
+$del_id = filter_input(INPUT_POST, 'del_id', FILTER_SANITIZE_NUMBER_INT);
 
 if ($del_id && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -15,7 +15,7 @@ if ($del_id && $_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Kết nối thất bại: " . $conn->connect_error);
     }
 
-    $sql = "DELETE FROM nhan_vien WHERE nhan_vien_id = ?";
+    $sql = "DELETE FROM taikhoan WHERE id_tai_khoan = ?";
 
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
@@ -28,16 +28,16 @@ if ($del_id && $_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         if ($stmt->execute() === true) {
             $_SESSION['info'] = "Xóa nhân viên thành công!";
-            header('location: nhan_vien.php');
+            header('location: employees.php');
             exit();
         } else {
             $_SESSION['failure'] = "Không thể xóa nhân viên";
-            header('location: nhan_vien.php');
+            header('location: employees.php');
             exit();
         }
     } catch (mysqli_sql_exception $e) {
         $_SESSION['failure'] = "Đã xảy ra lỗi khi xóa nhân viên: " . $e->getMessage();
-        header('location: nhan_vien.php');
+        header('location: employees.php');
         exit();
     } finally {
         $stmt->close();

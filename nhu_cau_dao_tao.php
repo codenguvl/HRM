@@ -42,7 +42,28 @@ $rows = $db->arraybuilder()->paginate('nhu_cau_dao_tao', $page, $select);
 $total_pages = $db->totalPages;
 
 include BASE_PATH . '/includes/header.php';
+
+function getLoaiKyNangText($value)
+{
+    $options = [
+        'kien_thuc' => 'Kiến thức',
+        'nghiep_vu' => 'Nghiệp vụ',
+        'ky_nang' => 'Kỹ năng'
+    ];
+    return isset($options[$value]) ? $options[$value] : $value;
+}
+
+function getMucKyNangText($value)
+{
+    $options = [
+        'co_ban' => 'Cơ bản',
+        'trung_binh' => 'Trung bình',
+        'cao' => 'Cao'
+    ];
+    return isset($options[$value]) ? $options[$value] : $value;
+}
 ?>
+
 <!-- Main container -->
 <div id="page-wrapper">
     <div class="row">
@@ -109,16 +130,18 @@ include BASE_PATH . '/includes/header.php';
             <tr>
                 <td><?php echo $row['nhu_cau_id']; ?></td>
                 <td><?php echo xss_clean($row['nhan_vien_id']); ?></td>
-                <td><?php echo xss_clean($row['loai_ky_nang']); ?></td>
-                <td><?php echo xss_clean($row['muc_ky_nang']); ?></td>
+                <td><?php echo getLoaiKyNangText(xss_clean($row['loai_ky_nang'])); ?></td>
+                <td><?php echo getMucKyNangText(xss_clean($row['muc_ky_nang'])); ?></td>
                 <td><?php echo xss_clean($row['nhan_xet_quan_ly']); ?></td>
                 <td><?php echo xss_clean($row['ket_qua_khao_sat']); ?></td>
                 <td>
-                    <a href="sua_nhu_cau_dao_tao.php?nhu_cau_id=<?php echo $row['nhu_cau_id']; ?>&operation=edit"
-                        class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                    <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                        data-target="#confirm-delete-<?php echo $row['nhu_cau_id']; ?>"><i
-                            class="glyphicon glyphicon-trash"></i></a>
+                    <div class="flex">
+                        <a href="sua_nhu_cau_dao_tao.php?nhu_cau_id=<?php echo $row['nhu_cau_id']; ?>&operation=edit"
+                            class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                        <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
+                            data-target="#confirm-delete-<?php echo $row['nhu_cau_id']; ?>"><i
+                                class="glyphicon glyphicon-trash"></i></a>
+                    </div>
                 </td>
             </tr>
             <!-- Delete Confirmation Modal -->

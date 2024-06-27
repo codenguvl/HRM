@@ -16,12 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 	if ($db->count >= 1) {
 		$db_password = $row[0]['mat_khau'];
-		$user_id = $row[0]['tai_khoan_id'];
+		$user_id = (int)$row[0]['id_tai_khoan'];
 		$role = $row[0]['vai_tro'];
 
 		if ($passwd === $db_password) {
 			$_SESSION['user_logged_in'] = TRUE;
 			$_SESSION['user_role'] = $role;
+			$_SESSION['id_tai_khoan'] = $user_id;
 			header('Location: index.php');
 		} else {
 			$_SESSION['login_failure'] = "Invalid username or password";

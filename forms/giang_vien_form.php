@@ -19,6 +19,18 @@
         placeholder="Thông tin liên hệ" class="form-control" required="required" id="thong_tin_lien_he">
 </div>
 
+<div class="form-group">
+    <label for="tai_khoan_id">Tài khoản *</label>
+    <select name="tai_khoan_id" class="form-control" required="required" id="tai_khoan_id">
+        <option value="">Chọn tài khoản</option>
+        <?php foreach ($accounts as $account): ?>
+        <option value="<?php echo $account['id_tai_khoan']; ?>">
+            <?php echo htmlspecialchars($account['ten'], ENT_QUOTES, 'UTF-8'); ?>
+        </option>
+        <?php endforeach; ?>
+    </select>
+</div>
+
 <div class="form-group text-center">
     <label></label>
     <button type="submit" class="btn btn-warning">Lưu <span class="glyphicon glyphicon-send"></span></button>

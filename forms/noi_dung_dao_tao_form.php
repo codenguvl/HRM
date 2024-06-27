@@ -1,16 +1,28 @@
 <fieldset>
     <div class="form-group">
         <label for="chuong_trinh_id">Chương trình ID *</label>
-        <input type="number" name="chuong_trinh_id"
-            value="<?php echo isset($noi_dung_dao_tao['chuong_trinh_id']) ? htmlspecialchars($noi_dung_dao_tao['chuong_trinh_id'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Chương trình ID" class="form-control" required="required" id="chuong_trinh_id">
+        <select name="chuong_trinh_id" class="form-control" required="required" id="chuong_trinh_id">
+            <?php
+            $chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+            foreach ($chuong_trinh_dao_tao_list as $chuong_trinh) {
+                $selected = (isset($noi_dung_dao_tao['chuong_trinh_id']) && $noi_dung_dao_tao['chuong_trinh_id'] == $chuong_trinh['chuong_trinh_id']) ? 'selected' : '';
+                echo "<option value='{$chuong_trinh['chuong_trinh_id']}' $selected>{$chuong_trinh['ten_chuong_trinh']}</option>";
+            }
+            ?>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="loai_noi_dung">Loại nội dung *</label>
-        <input type="text" name="loai_noi_dung"
-            value="<?php echo isset($noi_dung_dao_tao['loai_noi_dung']) ? htmlspecialchars($noi_dung_dao_tao['loai_noi_dung'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Loại nội dung" class="form-control" required="required" id="loai_noi_dung">
+        <select name="loai_noi_dung" class="form-control" required="required" id="loai_noi_dung">
+            <?php
+            $loai_noi_dung_options = getLoaiNoiDungOptions();
+            foreach ($loai_noi_dung_options as $value => $label) {
+                $selected = (isset($noi_dung_dao_tao['loai_noi_dung']) && $noi_dung_dao_tao['loai_noi_dung'] == $value) ? 'selected' : '';
+                echo "<option value='{$value}' $selected>{$label}</option>";
+            }
+            ?>
+        </select>
     </div>
 
     <div class="form-group">

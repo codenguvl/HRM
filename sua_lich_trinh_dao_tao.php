@@ -31,6 +31,12 @@ if ($edit) {
     $db->where('lich_trinh_id', $lich_trinh_id);
     $lich_trinh = $db->getOne("lich_trinh_dao_tao");
 }
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
 
 include_once 'includes/header.php';
 ?>

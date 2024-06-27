@@ -3,6 +3,21 @@ session_start();
 require_once './config/config.php';
 require_once BASE_PATH . '/includes/auth_validate.php';
 
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
+
+$chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+$loai_danh_gia_options = [
+    'Thực hành' => 'Thực hành',
+    'Lý thuyết' => 'Lý thuyết',
+    'Tổng hợp' => 'Tổng hợp'
+];
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 

@@ -1,23 +1,41 @@
 <fieldset>
     <div class="form-group">
         <label for="nhan_vien_id">Mã nhân viên *</label>
-        <input type="number" name="nhan_vien_id"
-            value="<?php echo isset($nhu_cau_dao_tao['nhan_vien_id']) ? htmlspecialchars($nhu_cau_dao_tao['nhan_vien_id'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Mã nhân viên" class="form-control" required="required" id="nhan_vien_id">
+        <select name="nhan_vien_id" class="form-control" required="required" id="nhan_vien_id">
+            <option value="">Chọn nhân viên</option>
+            <?php foreach ($nhan_vien_list as $nhan_vien): ?>
+            <option value="<?php echo htmlspecialchars($nhan_vien['id_tai_khoan'], ENT_QUOTES, 'UTF-8'); ?>"
+                <?php echo (isset($nhu_cau_dao_tao['nhan_vien_id']) && $nhu_cau_dao_tao['nhan_vien_id'] == $nhan_vien['id_tai_khoan']) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($nhan_vien['ten'], ENT_QUOTES, 'UTF-8'); ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="loai_ky_nang">Loại kỹ năng *</label>
-        <input type="text" name="loai_ky_nang"
-            value="<?php echo isset($nhu_cau_dao_tao['loai_ky_nang']) ? htmlspecialchars($nhu_cau_dao_tao['loai_ky_nang'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Loại kỹ năng" class="form-control" required="required" id="loai_ky_nang">
+        <select name="loai_ky_nang" class="form-control" required="required" id="loai_ky_nang">
+            <option value="">Chọn loại kỹ năng</option>
+            <?php foreach ($loai_ky_nang_options as $value => $label): ?>
+            <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>"
+                <?php echo (isset($nhu_cau_dao_tao['loai_ky_nang']) && $nhu_cau_dao_tao['loai_ky_nang'] == $value) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="muc_ky_nang">Mức kỹ năng *</label>
-        <input type="text" name="muc_ky_nang"
-            value="<?php echo isset($nhu_cau_dao_tao['muc_ky_nang']) ? htmlspecialchars($nhu_cau_dao_tao['muc_ky_nang'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Mức kỹ năng" class="form-control" required="required" id="muc_ky_nang">
+        <select name="muc_ky_nang" class="form-control" required="required" id="muc_ky_nang">
+            <option value="">Chọn mức kỹ năng</option>
+            <?php foreach ($muc_ky_nang_options as $value => $label): ?>
+            <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>"
+                <?php echo (isset($nhu_cau_dao_tao['muc_ky_nang']) && $nhu_cau_dao_tao['muc_ky_nang'] == $value) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+            </option>
+            <?php endforeach; ?>
+        </select>
     </div>
 
     <div class="form-group">

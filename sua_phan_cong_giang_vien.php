@@ -28,6 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+function getGiangVienList()
+{
+    $db = getDbInstance();
+    $giang_vien = $db->get('giang_vien', null, ['giang_vien_id', 'ten']);
+    return $giang_vien;
+}
+
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
+
+$giang_vien_list = getGiangVienList();
+$chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+
 if ($edit) {
     $db->where('chuong_trinh_id', $assignment_id);
     $assignment = $db->getOne("phan_cong_giang_vien");

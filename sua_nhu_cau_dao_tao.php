@@ -32,6 +32,37 @@ if ($edit) {
     $nhu_cau_dao_tao = $db->getOne("nhu_cau_dao_tao");
 }
 
+function getEmployeeList()
+{
+    $db = getDbInstance();
+    $employees = $db->get('tai_khoan', null, ['id_tai_khoan', 'ten']);
+    return $employees;
+}
+
+
+function getLoaiKyNangOptions()
+{
+    return [
+        'kien_thuc' => 'Kiến thức',
+        'nghiep_vu' => 'Nghiệp vụ',
+        'ky_nang' => 'Kỹ năng'
+    ];
+}
+
+
+function getMucKyNangOptions()
+{
+    return [
+        'co_ban' => 'Cơ bản',
+        'trung_binh' => 'Trung bình',
+        'cao' => 'Cao'
+    ];
+}
+
+$nhan_vien_list = getEmployeeList();
+$loai_ky_nang_options = getLoaiKyNangOptions();
+$muc_ky_nang_options = getMucKyNangOptions();
+
 include_once 'includes/header.php';
 ?>
 <div id="page-wrapper">

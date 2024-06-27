@@ -3,6 +3,16 @@ session_start();
 require_once './config/config.php';
 require_once './includes/auth_validate.php';
 
+function getGiangVienAccountList()
+{
+    $db = getDbInstance();
+    $db->where('vai_tro', 'GiangVien');
+    $accounts = $db->get('tai_khoan', null, ['id_tai_khoan', 'ten']);
+    return $accounts;
+}
+
+$accounts = getGiangVienAccountList();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 

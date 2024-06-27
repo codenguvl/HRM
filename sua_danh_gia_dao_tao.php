@@ -32,6 +32,21 @@ if ($edit) {
     $evaluation = $db->getOne("danh_gia_dao_tao");
 }
 
+function getChuongTrinhDaoTaoList()
+{
+    $db = getDbInstance();
+    $chuong_trinh_dao_tao = $db->get('chuong_trinh_dao_tao', null, ['chuong_trinh_id', 'ten_chuong_trinh']);
+    return $chuong_trinh_dao_tao;
+}
+
+$chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
+$loai_danh_gia_options = [
+    'Thực hành' => 'Thực hành',
+    'Lý thuyết' => 'Lý thuyết',
+    'Tổng hợp' => 'Tổng hợp'
+];
+
+
 include_once 'includes/header.php';
 ?>
 <div id="page-wrapper">

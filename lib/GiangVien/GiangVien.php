@@ -22,6 +22,7 @@ class GiangVien
             'ten' => 'Tên',
             'chuyen_mon' => 'Chuyên môn',
             'thong_tin_lien_he' => 'Thông tin liên hệ',
+            'ten_tai_khoan' => 'Tên tài khoản'
         ];
 
         return $ordering;

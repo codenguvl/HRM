@@ -1,5 +1,5 @@
 <?php
-class NhanVien
+class TaiKhoan
 {
     /**
      *
@@ -18,14 +18,16 @@ class NhanVien
     public function setOrderingValues()
     {
         $ordering = [
-            'nhan_vien_id' => 'ID',
+            'id_tai_khoan' => 'ID',
             'ten' => 'Tên',
             'phong_ban' => 'Phòng ban',
             'vi_tri' => 'Vị trí',
             'email' => 'Email',
             'so_dien_thoai' => 'Số điện thoại',
+            'vai_tro' => 'Vai trò',
+            'ten_dang_nhap' => 'Tên đăng nhập',
+            'mat_khau' => 'Mật khẩu'
         ];
-
 
         return $ordering;
     }

@@ -3,6 +3,36 @@ session_start();
 require_once './config/config.php';
 require_once './includes/auth_validate.php';
 
+function getEmployeeList()
+{
+    $db = getDbInstance();
+    $employees = $db->get('tai_khoan', null, ['id_tai_khoan', 'ten']);
+    return $employees;
+}
+
+
+function getLoaiKyNangOptions()
+{
+    return [
+        'kien_thuc' => 'Kiến thức',
+        'nghiep_vu' => 'Nghiệp vụ',
+        'ky_nang' => 'Kỹ năng'
+    ];
+}
+
+
+function getMucKyNangOptions()
+{
+    return [
+        'co_ban' => 'Cơ bản',
+        'trung_binh' => 'Trung bình',
+        'cao' => 'Cao'
+    ];
+}
+$nhan_vien_list = getEmployeeList();
+$loai_ky_nang_options = getLoaiKyNangOptions();
+$muc_ky_nang_options = getMucKyNangOptions();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 

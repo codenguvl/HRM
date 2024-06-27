@@ -32,6 +32,16 @@ if ($edit) {
     $instructor = $db->getOne("giang_vien");
 }
 
+function getGiangVienAccountList()
+{
+    $db = getDbInstance();
+    $db->where('vai_tro', 'GiangVien');
+    $accounts = $db->get('tai_khoan', null, ['id_tai_khoan', 'ten']);
+    return $accounts;
+}
+
+$accounts = getGiangVienAccountList();
+
 include_once 'includes/header.php';
 ?>
 <div id="page-wrapper">
