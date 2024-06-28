@@ -12,7 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $employee_id = filter_input(INPUT_GET, 'id_tai_khoan', FILTER_SANITIZE_NUMBER_INT);
     $data_to_update = filter_input_array(INPUT_POST);
 
-    // Update query
+    if (!empty($data_to_update['mat_khau'])) {
+        $data_to_update['mat_khau'] = md5($data_to_update['mat_khau']);
+    } else {
+        unset($data_to_update['mat_khau']);
+    }
+
     $db->where('id_tai_khoan', $employee_id);
     $result = $db->update('tai_khoan', $data_to_update);
 
@@ -32,6 +37,7 @@ if ($edit) {
 
 include_once 'includes/header.php';
 ?>
+
 <div id="page-wrapper">
     <div class="row">
         <h2 class="page-header">Cập nhật nhân viên</h2>

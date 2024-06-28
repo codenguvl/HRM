@@ -6,7 +6,6 @@ require_once './includes/auth_validate.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 
-    // Kiểm tra các trường bắt buộc
     $required_fields = array('ten', 'phong_ban', 'vi_tri', 'email', 'so_dien_thoai', 'vai_tro', 'ten_dang_nhap', 'mat_khau');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
@@ -15,12 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    $data_to_store['mat_khau'] = md5($data_to_store['mat_khau']);
+
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-
 
     $sql = "INSERT INTO tai_khoan (ten, phong_ban, vi_tri, email, so_dien_thoai, vai_tro, ten_dang_nhap, mat_khau) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Bind các tham số vào câu lệnh SQL
     $stmt->bind_param(
         "ssssssss",
         $data_to_store['ten'],
@@ -43,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data_to_store['mat_khau']
     );
 
-    // Thực thi câu lệnh SQL và kiểm tra kết quả
     if ($stmt->execute() === true) {
         $_SESSION['success'] = "Nhân viên đã được thêm thành công!";
         header('location: nhan_vien.php');
@@ -53,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Đóng kết nối và statement sau khi hoàn thành
     $stmt->close();
     $conn->close();
 }
@@ -62,6 +59,7 @@ $edit = false;
 
 require_once 'includes/header.php';
 ?>
+
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
@@ -108,14 +106,11 @@ require_once 'includes/header.php';
             <div class="form-group">
                 <label for="vai_tro">Vai trò *</label>
                 <select name="vai_tro" class="form-control" required="required" id="vai_tro">
-                    <option value="TaiKhoan"
-                        <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'TaiKhoan') ? 'selected' : ''; ?>>
+                    <option value="TaiKhoan" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'TaiKhoan') ? 'selected' : ''; ?>>
                         Tài khoản</option>
-                    <option value="NhanVien"
-                        <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'NhanVien') ? 'selected' : ''; ?>>
+                    <option value="NhanVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'NhanVien') ? 'selected' : ''; ?>>
                         Nhân viên</option>
-                    <option value="GiangVien"
-                        <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'GiangVien') ? 'selected' : ''; ?>>
+                    <option value="GiangVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'GiangVien') ? 'selected' : ''; ?>>
                         Giảng viên</option>
                 </select>
             </div>
@@ -144,40 +139,40 @@ require_once 'includes/header.php';
 </div>
 
 <script type="text/javascript">
-$(document).ready(function() {
-    $("#employee_form").validate({
-        rules: {
-            ten: {
-                required: true,
-                minlength: 3
-            },
-            phong_ban: {
-                required: true
-            },
-            vi_tri: {
-                required: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            so_dien_thoai: {
-                digits: true,
-                minlength: 10
-            },
-            vai_tro: {
-                required: true
-            },
-            ten_dang_nhap: {
-                required: true
-            },
-            mat_khau: {
-                required: true,
-                minlength: 6
+    $(document).ready(function () {
+        $("#employee_form").validate({
+            rules: {
+                ten: {
+                    required: true,
+                    minlength: 3
+                },
+                phong_ban: {
+                    required: true
+                },
+                vi_tri: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                so_dien_thoai: {
+                    digits: true,
+                    minlength: 10
+                },
+                vai_tro: {
+                    required: true
+                },
+                ten_dang_nhap: {
+                    required: true
+                },
+                mat_khau: {
+                    required: true,
+                    minlength: 6
+                }
             }
-        }
+        });
     });
-});
 </script>
 
 <?php include_once 'includes/footer.php'; ?>

@@ -3,6 +3,10 @@ session_start();
 require_once 'config/config.php';
 require_once BASE_PATH . '/includes/auth_validate.php';
 
+
+$role = $_SESSION['user_role'];
+$tai_khoan_id = $_SESSION['id_tai_khoan'];
+
 $search_string = filter_input(INPUT_GET, 'search_string');
 $filter_col = filter_input(INPUT_GET, 'filter_col');
 $order_by = filter_input(INPUT_GET, 'order_by');
@@ -20,20 +24,104 @@ if (!$order_by) {
     $order_by = 'Desc';
 }
 
-$db = getDbInstance();
-$select = array('lich_trinh_id', 'chuong_trinh_id', 'ngay_bat_dau', 'ngay_ket_thuc', 'dia_diem');
+// Connect to database
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if ($conn->connect_error) {
+    die("Kết nối thất bại: " . $conn->connect_error);
+}
 
+// Get giang_vien_id from tai_khoan_id
+$giang_vien_id = null;
+if ($role == 'GiangVien') {
+    $stmt = $conn->prepare("SELECT giang_vien_id FROM giang_vien WHERE tai_khoan_id = ?");
+    if ($stmt === false) {
+        die("Lỗi khi chuẩn bị câu lệnh: " . $conn->error);
+    }
+    $stmt->bind_param("i", $tai_khoan_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $giang_vien = $result->fetch_assoc();
+        $giang_vien_id = $giang_vien['giang_vien_id'];
+    }
+    $stmt->close();
+}
+
+// Base SQL query
+$sql = "SELECT lich_trinh_dao_tao.lich_trinh_id, lich_trinh_dao_tao.chuong_trinh_id, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc, lich_trinh_dao_tao.dia_diem FROM lich_trinh_dao_tao";
+
+// If the user is a GiangVien, modify the query to only show their assigned training programs
+if ($role == 'GiangVien' && $giang_vien_id !== null) {
+    $sql .= " JOIN phan_cong_giang_vien ON lich_trinh_dao_tao.chuong_trinh_id = phan_cong_giang_vien.chuong_trinh_id WHERE phan_cong_giang_vien.giang_vien_id = ?";
+}
+
+// Add search and order conditions
 if ($search_string) {
-    $db->where('dia_diem', '%' . $search_string . '%', 'like');
+    $sql .= ($role == 'GiangVien' && $giang_vien_id !== null) ? " AND" : " WHERE";
+    $sql .= " lich_trinh_dao_tao.dia_diem LIKE ?";
 }
 
-if ($order_by) {
-    $db->orderBy($filter_col, $order_by);
+$sql .= " ORDER BY $filter_col $order_by LIMIT ?, ?";
+
+// Prepare and execute the query
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die("Lỗi khi chuẩn bị câu lệnh: " . $conn->error);
 }
 
-$db->pageLimit = $pagelimit;
-$rows = $db->arraybuilder()->paginate('lich_trinh_dao_tao', $page, $select);
-$total_pages = $db->totalPages;
+$search_param = '%' . $search_string . '%';
+$offset = ($page - 1) * $pagelimit;
+$limit = $pagelimit;
+
+if ($role == 'GiangVien' && $giang_vien_id !== null) {
+    if ($search_string) {
+        $stmt->bind_param("isii", $giang_vien_id, $search_param, $offset, $limit);
+    } else {
+        $stmt->bind_param("iii", $giang_vien_id, $offset, $limit);
+    }
+} else {
+    if ($search_string) {
+        $stmt->bind_param("sii", $search_param, $offset, $limit);
+    } else {
+        $stmt->bind_param("ii", $offset, $limit);
+    }
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+$rows = $result->fetch_all(MYSQLI_ASSOC);
+
+// Count total rows for pagination
+$count_sql = "SELECT COUNT(*) as count FROM lich_trinh_dao_tao";
+if ($role == 'GiangVien' && $giang_vien_id !== null) {
+    $count_sql .= " JOIN phan_cong_giang_vien ON lich_trinh_dao_tao.chuong_trinh_id = phan_cong_giang_vien.chuong_trinh_id WHERE phan_cong_giang_vien.giang_vien_id = ?";
+}
+if ($search_string) {
+    $count_sql .= ($role == 'GiangVien' && $giang_vien_id !== null) ? " AND" : " WHERE";
+    $count_sql .= " lich_trinh_dao_tao.dia_diem LIKE ?";
+}
+
+$count_stmt = $conn->prepare($count_sql);
+if ($count_stmt === false) {
+    die("Lỗi khi chuẩn bị câu lệnh: " . $conn->error);
+}
+
+if ($role == 'GiangVien' && $giang_vien_id !== null) {
+    if ($search_string) {
+        $count_stmt->bind_param("is", $giang_vien_id, $search_param);
+    } else {
+        $count_stmt->bind_param("i", $giang_vien_id);
+    }
+} else {
+    if ($search_string) {
+        $count_stmt->bind_param("s", $search_param);
+    }
+}
+
+$count_stmt->execute();
+$count_result = $count_stmt->get_result();
+$total_rows = $count_result->fetch_assoc()['count'];
+$total_pages = ceil($total_rows / $pagelimit);
 
 include BASE_PATH . '/includes/header.php';
 ?>
@@ -110,11 +198,17 @@ include BASE_PATH . '/includes/header.php';
                 <td><?php echo xss_clean($row['ngay_ket_thuc']); ?></td>
                 <td><?php echo xss_clean($row['dia_diem']); ?></td>
                 <td>
+                    <?php if ($role == 'QuanTriVien'): ?>
                     <a href="sua_lich_trinh_dao_tao.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>&operation=edit"
                         class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                     <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
                         data-target="#confirm-delete-<?php echo $row['lich_trinh_id']; ?>"><i
                             class="glyphicon glyphicon-trash"></i></a>
+                    <?php endif; ?>
+                    <?php if ($role == 'GiangVien'): ?>
+                    <a href="xem_chi_tiet.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>"
+                        class="btn btn-info"><i class="glyphicon glyphicon-eye-open"></i> Xem chi tiết</a>
+                    <?php endif; ?>
                 </td>
             </tr>
             <!-- Delete Confirmation Modal -->
@@ -125,32 +219,35 @@ include BASE_PATH . '/includes/header.php';
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Xác nhận</h4>
+                                <h4 class="modal-title">Xác nhận xóa</h4>
                             </div>
                             <div class="modal-body">
-                                <input type="hidden" name="del_id" id="del_id"
-                                    value="<?php echo $row['lich_trinh_id']; ?>">
-                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                                <p>Bạn có chắc chắn muốn xóa lịch trình đào tạo này?</p>
+                                <input type="hidden" name="lich_trinh_id" value="<?php echo $row['lich_trinh_id']; ?>">
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-default pull-left">Có</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-danger">Xóa</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-            <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>
-    <!-- //Table -->
 
     <!-- Pagination -->
     <div class="text-center">
-        <?php echo paginationLinks($page, $total_pages, 'lich_trinh_dao_tao.php'); ?>
+        <ul class="pagination">
+            <?php
+            for ($i = 1; $i <= $total_pages; $i++) {
+                $active = ($i == $page) ? 'active' : '';
+                echo "<li class='$active'><a href='?page=$i'>$i</a></li>";
+            }
+            ?>
+        </ul>
     </div>
-    <!-- //Pagination -->
 </div>
-<!-- //Main container -->
+
 <?php include BASE_PATH . '/includes/footer.php'; ?>

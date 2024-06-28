@@ -3,13 +3,12 @@ session_start();
 require_once './config/config.php';
 require_once BASE_PATH . '/includes/auth_validate.php';
 
-$dang_ky = isset($dang_ky) ? $dang_ky : [];
 $chuong_trinh_id = filter_input(INPUT_GET, 'chuong_trinh_id', FILTER_SANITIZE_NUMBER_INT);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_map('htmlspecialchars', $_POST);
     $data_to_store['nhan_vien_id'] = (int) $_SESSION['id_tai_khoan'];
 
-    // Kiểm tra các trường bắt buộc
     $required_fields = array('nhan_vien_id', 'chuong_trinh_id', 'ngay_dang_ky', 'trang_thai');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
@@ -19,13 +18,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Chuyển đổi nhan_vien_id từ session thành integer
     $data_to_store['nhan_vien_id'] = (int) $_SESSION['id_tai_khoan'];
 
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
     if ($conn->connect_error) {
         die("Kết nối thất bại: " . $conn->connect_error);
+    }
+
+    $sql_check = "SELECT * FROM dang_ky_dao_tao WHERE tai_khoan_id = ? AND chuong_trinh_id = ? AND trang_thai != 'Đã duyệt'";
+    $stmt_check = $conn->prepare($sql_check);
+    if ($stmt_check === false) {
+        $_SESSION['failure'] = 'Lỗi khi chuẩn bị câu lệnh: ' . $conn->error;
+        header('location: dang_ky_dao_tao.php');
+        exit();
+    }
+    $stmt_check->bind_param("ii", $data_to_store['nhan_vien_id'], $data_to_store['chuong_trinh_id']);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+
+    if ($result_check->num_rows > 0) {
+        $_SESSION['failure'] = 'Bạn đã đăng ký chương trình này rồi và đang đợi duyệt.';
+        header('location: chuong_trinh_dao_tao.php');
+        exit();
     }
 
     $sql = "INSERT INTO dang_ky_dao_tao (tai_khoan_id, chuong_trinh_id, ngay_dang_ky, trang_thai) VALUES (?, ?, ?, ?)";
@@ -37,13 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Sử dụng bind_param để bind các giá trị vào câu lệnh SQL
     $stmt->bind_param("iiss", $data_to_store['nhan_vien_id'], $data_to_store['chuong_trinh_id'], $data_to_store['ngay_dang_ky'], $data_to_store['trang_thai']);
 
     try {
         if ($stmt->execute() === true) {
             $_SESSION['success'] = "Đăng ký đào tạo đã được thêm thành công!";
-            header('location: dang_ky_dao_tao.php');
+            header('location: chuong_trinh_dao_tao.php');
             exit();
         } else {
             $_SESSION['failure'] = 'Thêm không thành công: ' . $stmt->error;
@@ -127,7 +141,5 @@ function getTenChuongTrinh($chuong_trinh_id)
     return $ten_chuong_trinh ? $ten_chuong_trinh : 'Không xác định';
 }
 ?>
-
-
 
 <?php include BASE_PATH . '/includes/footer.php'; ?>

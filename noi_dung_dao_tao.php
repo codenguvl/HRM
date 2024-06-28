@@ -139,6 +139,8 @@ include BASE_PATH . '/includes/header.php';
                         <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
                             data-target="#confirm-delete-<?php echo $row['noi_dung_id']; ?>"><i
                                 class="glyphicon glyphicon-trash"></i></a>
+                        <a href="danh_gia_tien_do.php?noi_dung_id=<?php echo $row['noi_dung_id']; ?>"
+                            class="btn btn-info"><i class="glyphicon glyphicon-check"></i> Đánh giá tiến độ</a>
                     </div>
                 </td>
             </tr>

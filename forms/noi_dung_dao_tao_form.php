@@ -39,10 +39,8 @@
     </div>
 
     <div class="form-group">
-        <label for="duong_dan_tap_tin">Đường dẫn tệp tin *</label>
-        <input type="text" name="duong_dan_tap_tin"
-            value="<?php echo isset($noi_dung_dao_tao['duong_dan_tap_tin']) ? htmlspecialchars($noi_dung_dao_tao['duong_dan_tap_tin'], ENT_QUOTES, 'UTF-8') : ''; ?>"
-            placeholder="Đường dẫn tệp tin" class="form-control" required="required" id="duong_dan_tap_tin">
+        <label for="duong_dan_tap_tin">Tập tin *</label>
+        <input type="file" name="duong_dan_tap_tin" class="form-control" required="required" id="duong_dan_tap_tin">
     </div>
 
     <div class="form-group">

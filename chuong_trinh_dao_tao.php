@@ -34,6 +34,19 @@ $db->pageLimit = $pagelimit;
 $rows = $db->arraybuilder()->paginate('chuong_trinh_dao_tao', $page, $select);
 $total_pages = $db->totalPages;
 
+$chuong_trinh_ids = array_column($rows, 'chuong_trinh_id');
+$nhan_vien_id = $_SESSION['id_tai_khoan'];
+foreach ($rows as $row) {
+    $db->where('tai_khoan_id', $nhan_vien_id);
+    $db->where('chuong_trinh_id', $row['chuong_trinh_id']);
+    $dang_ky = $db->getOne('dang_ky_dao_tao', ['trang_thai']);
+    if ($dang_ky) {
+        $trang_thai_dang_ky[$row['chuong_trinh_id']] = $dang_ky['trang_thai'];
+    } else {
+        $trang_thai_dang_ky[$row['chuong_trinh_id']] = 'Chờ duyệt';
+    }
+}
+
 include BASE_PATH . '/includes/header.php';
 ?>
 <!-- Main container -->
@@ -43,10 +56,12 @@ include BASE_PATH . '/includes/header.php';
             <h1 class="page-header">Chương trình đào tạo</h1>
         </div>
         <div class="col-lg-6">
+            <?php if ($role == 'QuanTriVien'): ?>
             <div class="page-action-links text-right">
                 <a href="them_chuong_trinh.php?operation=create" class="btn btn-success"><i
                         class="glyphicon glyphicon-plus"></i> Thêm mới</a>
             </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php include BASE_PATH . '/includes/flash_messages.php'; ?>
@@ -102,15 +117,23 @@ include BASE_PATH . '/includes/header.php';
                 <td><?php echo xss_clean($row['hinh_thuc']); ?></td>
                 <td>
                     <div class="flex">
+                        <?php if ($role == 'QuanTriVien'): ?>
                         <a href="sua_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>&operation=edit"
                             class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
                         <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
                             data-target="#confirm-delete-<?php echo $row['chuong_trinh_id']; ?>"><i
                                 class="glyphicon glyphicon-trash"></i></a>
-                        <a href="them_dang_ky_dao_tao.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
-                            class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Đăng ký đào tạo</a>
+                        <?php endif; ?>
+
+                        <?php if ($role == 'NhanVien'): ?>
+                        <?php if (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Đã duyệt'): ?>
                         <a href="chi_tiet_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
                             class="btn btn-info"><i class="glyphicon glyphicon-info-sign"></i> Xem chi tiết</a>
+                        <?php else: ?>
+                        <a href="them_dang_ky_dao_tao.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
+                            class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Đăng ký đào tạo</a>
+                        <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </td>
             </tr>

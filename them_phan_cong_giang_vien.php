@@ -20,6 +20,8 @@ function getChuongTrinhDaoTaoList()
 $giang_vien_list = getGiangVienList();
 $chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
 
+$selected_giang_vien_id = filter_input(INPUT_GET, 'giang_vien_id', FILTER_VALIDATE_INT);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_map('trim', $_POST);
     $required_fields = array('chuong_trinh_id', 'giang_vien_id');
@@ -27,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
             $_SESSION['failure'] = 'Thiếu trường bắt buộc: ' . $field;
-            header('location: phan_cong_giang_vien.php');
+            header('location: giang_vien.php');
             exit();
         }
     }
@@ -43,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
         $_SESSION['failure'] = 'Lỗi khi chuẩn bị câu lệnh: ' . $conn->error;
-        header('location: phan_cong_giang_vien.php');
+        header('location: giang_vien.php');
         exit();
     }
     $stmt->bind_param("ii", $data_to_store['chuong_trinh_id'], $data_to_store['giang_vien_id']);
@@ -51,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if ($stmt->execute() === true) {
             $_SESSION['success'] = "Phân công giảng viên đã được thêm thành công!";
-            header('location: phan_cong_giang_vien.php');
+            header('location: giang_vien.php');
             exit();
         } else {
             $_SESSION['failure'] = 'Thêm không thành công: ' . $stmt->error;
-            header('location: phan_cong_giang_vien.php');
+            header('location: giang_vien.php');
             exit();
         }
     } catch (mysqli_sql_exception $e) {
@@ -64,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $_SESSION['failure'] = "Đã xảy ra lỗi khi thêm phân công giảng viên: " . $e->getMessage();
         }
-        header('location: phan_cong_giang_vien.php');
+        header('location: giang_vien.php');
         exit();
     } finally {
         $stmt->close();
@@ -88,20 +90,20 @@ require_once BASE_PATH . '/includes/header.php';
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#phan_cong_form").validate({
-            rules: {
-                chuong_trinh_id: {
-                    required: true,
-                    digits: true
-                },
-                giang_vien_id: {
-                    required: true,
-                    digits: true
-                }
+$(document).ready(function() {
+    $("#phan_cong_form").validate({
+        rules: {
+            chuong_trinh_id: {
+                required: true,
+                digits: true
+            },
+            giang_vien_id: {
+                required: true,
+                digits: true
             }
-        });
+        }
     });
+});
 </script>
 
 <?php include BASE_PATH . '/includes/footer.php'; ?>

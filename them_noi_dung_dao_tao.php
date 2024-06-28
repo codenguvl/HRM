@@ -18,17 +18,32 @@ function getLoaiNoiDungOptions()
     ];
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 
-    $required_fields = array('chuong_trinh_id', 'loai_noi_dung', 'tieu_de', 'mo_ta', 'duong_dan_tap_tin', 'chu_de');
+    $required_fields = array('chuong_trinh_id', 'loai_noi_dung', 'tieu_de', 'mo_ta', 'chu_de');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
             echo 'Thiếu trường bắt buộc: ' . $field;
             exit();
         }
     }
+
+    if (!isset($_FILES['duong_dan_tap_tin']) || $_FILES['duong_dan_tap_tin']['error'] !== UPLOAD_ERR_OK) {
+        echo 'Thiếu tệp tin hoặc tệp tin bị lỗi';
+        exit();
+    }
+
+    $upload_dir = 'uploads/';
+    $file_name = basename($_FILES['duong_dan_tap_tin']['name']);
+    $target_file = $upload_dir . $file_name;
+
+    if (!move_uploaded_file($_FILES['duong_dan_tap_tin']['tmp_name'], $target_file)) {
+        echo 'Có lỗi khi tải lên tệp tin';
+        exit();
+    }
+
+    $data_to_store['duong_dan_tap_tin'] = $target_file;
 
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
@@ -75,6 +90,7 @@ $edit = false;
 
 require_once 'includes/header.php';
 ?>
+
 <div id="page-wrapper">
     <div class="row">
         <div class="col-lg-12">
@@ -87,31 +103,31 @@ require_once 'includes/header.php';
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#training_form").validate({
-            rules: {
-                chuong_trinh_id: {
-                    required: true,
-                    digits: true
-                },
-                loai_noi_dung: {
-                    required: true
-                },
-                tieu_de: {
-                    required: true
-                },
-                mo_ta: {
-                    required: true
-                },
-                duong_dan_tap_tin: {
-                    required: true
-                },
-                chu_de: {
-                    required: true
-                }
+$(document).ready(function() {
+    $("#training_form").validate({
+        rules: {
+            chuong_trinh_id: {
+                required: true,
+                digits: true
+            },
+            loai_noi_dung: {
+                required: true
+            },
+            tieu_de: {
+                required: true
+            },
+            mo_ta: {
+                required: true
+            },
+            duong_dan_tap_tin: {
+                required: true
+            },
+            chu_de: {
+                required: true
             }
-        });
+        }
     });
+});
 </script>
 
 <?php include_once 'includes/footer.php'; ?>

@@ -6,35 +6,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$username = filter_input(INPUT_POST, 'username');
 	$passwd = filter_input(INPUT_POST, 'passwd');
 
-	// Get DB instance
+	$passwd_md5 = md5($passwd);
+
 	$db = getDbInstance();
 	$db->where("ten_dang_nhap", $username);
 
 	$row = $db->get('tai_khoan');
 
-	echo $row;
-
 	if ($db->count >= 1) {
 		$db_password = $row[0]['mat_khau'];
-		$user_id = (int)$row[0]['id_tai_khoan'];
+		$user_id = (int) $row[0]['id_tai_khoan'];
 		$role = $row[0]['vai_tro'];
 
-		if ($passwd === $db_password) {
+		if ($passwd_md5 === $db_password) {
 			$_SESSION['user_logged_in'] = TRUE;
 			$_SESSION['user_role'] = $role;
 			$_SESSION['id_tai_khoan'] = $user_id;
 			header('Location: index.php');
 		} else {
-			$_SESSION['login_failure'] = "Invalid username or password";
+			$_SESSION['login_failure'] = "Tên đăng nhập hoặc mật khẩu không đúng";
 			header('Location: login.php');
 		}
 		exit;
 	} else {
-		$_SESSION['login_failure'] = "Invalid username or password";
+		$_SESSION['login_failure'] = "Tên đăng nhập hoặc mật khẩu không đúng";
 		header('Location: login.php');
 		exit;
 	}
 } else {
-	die('Method Not Allowed');
+	die('Phương thức không được cho phép');
 }
+
 ?>
