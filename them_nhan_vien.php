@@ -22,8 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "INSERT INTO tai_khoan (ten, phong_ban, vi_tri, email, so_dien_thoai, vai_tro, ten_dang_nhap, mat_khau) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    // Check if username already exists
+    $check_sql = "SELECT ten_dang_nhap FROM tai_khoan WHERE ten_dang_nhap = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("s", $data_to_store['ten_dang_nhap']);
+    $check_stmt->execute();
+    $check_stmt->store_result();
 
+    if ($check_stmt->num_rows > 0) {
+        $_SESSION['failure'] = 'Tên đăng nhập đã tồn tại. Vui lòng chọn tên đăng nhập khác.';
+        header('location: nhan_vien.php');
+        exit();
+    }
+
+    $sql = "INSERT INTO tai_khoan (ten, phong_ban, vi_tri, email, so_dien_thoai, vai_tro, ten_dang_nhap, mat_khau) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
         echo 'Error preparing statement: ' . $conn->error;
@@ -53,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->close();
     $conn->close();
+
 }
 
 $edit = false;

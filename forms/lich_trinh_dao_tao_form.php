@@ -5,7 +5,7 @@
             <?php
             $chuong_trinh_dao_tao_list = getChuongTrinhDaoTaoList();
             foreach ($chuong_trinh_dao_tao_list as $chuong_trinh) {
-                $selected = (isset($noi_dung_dao_tao['chuong_trinh_id']) && $noi_dung_dao_tao['chuong_trinh_id'] == $chuong_trinh['chuong_trinh_id']) ? 'selected' : '';
+                $selected = (isset($lich_trinh['chuong_trinh_id']) && $lich_trinh['chuong_trinh_id'] == $chuong_trinh['chuong_trinh_id']) ? 'selected' : '';
                 echo "<option value='{$chuong_trinh['chuong_trinh_id']}' $selected>{$chuong_trinh['ten_chuong_trinh']}</option>";
             }
             ?>

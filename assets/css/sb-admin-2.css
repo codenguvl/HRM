@@ -213,3 +213,25 @@ label.error {
   align-items: center;
   gap: 10px;
 }
+.btn-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.btn-disabled:hover {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.status-chua-dang-ky {
+  color: gray;
+  font-weight: bold;
+}
+
+.status-cho-duyet {
+  color: red;
+  font-weight: bold;
+}
+
+.status-da-duyet {
+  color: green;
+  font-weight: bold;
+}

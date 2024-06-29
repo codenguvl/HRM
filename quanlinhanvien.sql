@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 28, 2024 at 03:00 PM
+-- Generation Time: Jun 29, 2024 at 01:17 PM
 -- Server version: 5.7.17-log
 -- PHP Version: 5.6.30
 
@@ -78,7 +78,7 @@ INSERT INTO `dang_ky_dao_tao` (`dang_ky_id`, `tai_khoan_id`, `chuong_trinh_id`, 
 (10, 12, 1, '2024-06-28', 'Đã duyệt'),
 (11, 11, 5, '2024-06-28', 'Đã duyệt'),
 (12, 11, 5, '2024-06-28', 'Đã duyệt'),
-(13, 11, 7, '2024-06-28', 'Chờ duyệt');
+(13, 11, 7, '2024-06-28', 'Đã duyệt');
 
 -- --------------------------------------------------------
 
@@ -110,19 +110,22 @@ INSERT INTO `danh_gia_dao_tao` (`danh_gia_id`, `nhan_vien_id`, `chuong_trinh_id`
 
 CREATE TABLE `giang_vien` (
   `giang_vien_id` int(11) NOT NULL,
-  `ten` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `chuyen_mon` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `thong_tin_lien_he` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `tai_khoan_id` int(11) DEFAULT NULL
+  `tai_khoan_id` int(11) DEFAULT NULL,
+  `ngay_vao_dao_tao` date DEFAULT NULL,
+  `trinh_do_hoc_van` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `kinh_nghiem_giang_day` int(11) DEFAULT NULL,
+  `noi_cong_tac` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dia_chi` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `giang_vien`
 --
 
-INSERT INTO `giang_vien` (`giang_vien_id`, `ten`, `chuyen_mon`, `thong_tin_lien_he`, `tai_khoan_id`) VALUES
-(1, 'Ngô Thanh Tânn', 'XXX', '0000000000', 6),
-(2, 'Ngô Thanh Tân', 'XXX', '0999999999', 9);
+INSERT INTO `giang_vien` (`giang_vien_id`, `chuyen_mon`, `tai_khoan_id`, `ngay_vao_dao_tao`, `trinh_do_hoc_van`, `kinh_nghiem_giang_day`, `noi_cong_tac`, `dia_chi`) VALUES
+(1, 'XXX', 6, '0000-00-00', '2', 2, '2', '2'),
+(2, 'XXX', 9, '2024-06-28', '12/12', 23, '2', '2');
 
 -- --------------------------------------------------------
 
@@ -143,7 +146,7 @@ CREATE TABLE `lich_trinh_dao_tao` (
 --
 
 INSERT INTO `lich_trinh_dao_tao` (`lich_trinh_id`, `chuong_trinh_id`, `ngay_bat_dau`, `ngay_ket_thuc`, `dia_diem`) VALUES
-(1, 1, '2024-05-30', '2024-07-06', 'Cần Thơ'),
+(1, 2, '2024-05-30', '2024-07-06', 'Cần Thơ'),
 (2, 1, '2024-06-04', '2024-06-13', 'Cần Thơ');
 
 -- --------------------------------------------------------
@@ -189,7 +192,7 @@ CREATE TABLE `noi_dung_dao_tao` (
 --
 
 INSERT INTO `noi_dung_dao_tao` (`noi_dung_id`, `chuong_trinh_id`, `loai_noi_dung`, `tieu_de`, `mo_ta`, `duong_dan_tap_tin`, `chu_de`) VALUES
-(2, 1, 'theo_chu_de', '222', '22', '2', '2'),
+(2, 1, 'theo_chu_de', '222', '22', 'uploads/YeuCau2806.docx', '2'),
 (3, 1, 'theo_chu_de', '1', '33', 'uploads/LuuY.docx', '1'),
 (4, 1, 'theo_chu_de', '222', 'ss', 'uploads/NgoDinhThanhNhan_TES (1).pdf', '1'),
 (5, 1, 'theo_chu_de', 'Demo', '22', 'uploads/LuuY.docx', '22');
@@ -211,10 +214,7 @@ CREATE TABLE `phan_cong_giang_vien` (
 --
 
 INSERT INTO `phan_cong_giang_vien` (`phan_cong_id`, `chuong_trinh_id`, `giang_vien_id`) VALUES
-(5, 2, 1),
-(6, 1, 1),
-(7, 2, 2),
-(8, 5, 2);
+(22, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -239,11 +239,41 @@ CREATE TABLE `tai_khoan` (
 --
 
 INSERT INTO `tai_khoan` (`id_tai_khoan`, `ten`, `phong_ban`, `vi_tri`, `email`, `so_dien_thoai`, `vai_tro`, `ten_dang_nhap`, `mat_khau`) VALUES
-(5, 'Ngô Thanh Tân', '1', '1', 'tripvang123@gmail.com', '09999999999', '', 'admin', '21232f297a57a5a743894a0e4a801fc3'),
-(6, 'NGUYEN VAN A', '123', '123', 'test@gmail.com', '09999999999', 'GiangVien', 'giangvien', '2f830951c2e27fcf934a92d091971a02'),
+(5, 'Ngô Thanh Tân', '1', '1', 'tripvang123@gmail.com', '09999999999', 'QuanTriVien', 'admin', '21232f297a57a5a743894a0e4a801fc3'),
+(6, 'Nguyễn Thị Giảng Viên', '123', '123', 'test@gmail.com', '09999999999', 'GiangVien', 'giangvien', '2f830951c2e27fcf934a92d091971a02'),
 (9, 'Ngô Thanh B', '123', '123', 'tripvang1234@gmail.com', '0900000022', 'GiangVien', 'giangvien123', 'cdc65669b88161faf5a31babd3e1e0dd'),
 (11, 'Nhân viên', '12', '12', 'tripvang12365@gmail.com', '09999999999', 'NhanVien', 'nhanvien', '2a2fa4fe2fa737f129ef2d127b861b7e'),
 (12, 'Nhân viên test 1', '24', '123', 'test1@gmail.com', '09999999999', 'NhanVien', 'nhanvien1', 'fcf321d09609565b7a1ce6e70f1f5056');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `thong_bao`
+--
+
+CREATE TABLE `thong_bao` (
+  `id` int(11) NOT NULL,
+  `tai_khoan_id` int(11) DEFAULT NULL,
+  `noi_dung` text COLLATE utf8_unicode_ci,
+  `trang_thai` tinyint(1) DEFAULT '0',
+  `thoi_gian` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `thong_bao`
+--
+
+INSERT INTO `thong_bao` (`id`, `tai_khoan_id`, `noi_dung`, `trang_thai`, `thoi_gian`) VALUES
+(4, 6, 'Bạn đã được phân công vào chương trình đào tạo mới.', 1, '2024-06-29 12:09:04'),
+(5, 6, 'Bạn đã bị xóa phân công khỏi chương trình đào tạo.', 1, '2024-06-29 12:09:43'),
+(6, 6, 'Bạn đã được phân công vào chương trình đào tạo mới.', 1, '2024-06-29 12:10:59'),
+(7, 5, 'Bạn đã bị xóa phân công khỏi chương trình đào tạo.', 0, '2024-06-29 12:15:35'),
+(8, 5, 'Bạn đã bị xóa phân công khỏi chương trình đào tạo.', 0, '2024-06-29 12:15:41'),
+(9, 6, 'Bạn đã được phân công vào chương trình đào tạo mới.', 1, '2024-06-29 12:16:32'),
+(10, 6, 'Bạn đã bị xóa phân công khỏi chương trình đào tạo.', 1, '2024-06-29 12:20:17'),
+(11, 9, 'Bạn đã được phân công vào chương trình đào tạo mới.', 0, '2024-06-29 12:20:52'),
+(12, 9, 'Bạn đã bị xóa phân công khỏi chương trình đào tạo.', 0, '2024-06-29 12:53:01'),
+(13, 9, 'Bạn đã được phân công vào chương trình đào tạo mới.', 0, '2024-06-29 12:53:12');
 
 -- --------------------------------------------------------
 
@@ -342,6 +372,13 @@ ALTER TABLE `tai_khoan`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `thong_bao`
+--
+ALTER TABLE `thong_bao`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `tai_khoan_id` (`tai_khoan_id`);
+
+--
 -- Indexes for table `tien_do_hoc_tap`
 --
 ALTER TABLE `tien_do_hoc_tap`
@@ -373,7 +410,7 @@ ALTER TABLE `danh_gia_dao_tao`
 -- AUTO_INCREMENT for table `giang_vien`
 --
 ALTER TABLE `giang_vien`
-  MODIFY `giang_vien_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `giang_vien_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `lich_trinh_dao_tao`
 --
@@ -393,12 +430,17 @@ ALTER TABLE `noi_dung_dao_tao`
 -- AUTO_INCREMENT for table `phan_cong_giang_vien`
 --
 ALTER TABLE `phan_cong_giang_vien`
-  MODIFY `phan_cong_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `phan_cong_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `tai_khoan`
 --
 ALTER TABLE `tai_khoan`
-  MODIFY `id_tai_khoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_tai_khoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+--
+-- AUTO_INCREMENT for table `thong_bao`
+--
+ALTER TABLE `thong_bao`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT for table `tien_do_hoc_tap`
 --
@@ -452,6 +494,12 @@ ALTER TABLE `noi_dung_dao_tao`
 ALTER TABLE `phan_cong_giang_vien`
   ADD CONSTRAINT `phan_cong_giang_vien_ibfk_1` FOREIGN KEY (`chuong_trinh_id`) REFERENCES `chuong_trinh_dao_tao` (`chuong_trinh_id`),
   ADD CONSTRAINT `phan_cong_giang_vien_ibfk_2` FOREIGN KEY (`giang_vien_id`) REFERENCES `giang_vien` (`giang_vien_id`);
+
+--
+-- Constraints for table `thong_bao`
+--
+ALTER TABLE `thong_bao`
+  ADD CONSTRAINT `thong_bao_ibfk_1` FOREIGN KEY (`tai_khoan_id`) REFERENCES `tai_khoan` (`id_tai_khoan`);
 
 --
 -- Constraints for table `tien_do_hoc_tap`

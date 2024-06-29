@@ -5,25 +5,22 @@ require_once 'includes/auth_validate.php';
 
 $instructor_id = filter_input(INPUT_GET, 'giang_vien_id', FILTER_SANITIZE_NUMBER_INT);
 $operation = filter_input(INPUT_GET, 'operation', 513);
-($operation == 'edit') ? $edit = true : $edit = false;
+$edit = ($operation == 'edit') ? true : false;
 $db = getDbInstance();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $instructor_id = filter_input(INPUT_GET, 'giang_vien_id', FILTER_SANITIZE_NUMBER_INT);
     $data_to_update = filter_input_array(INPUT_POST);
 
-    $sql = "UPDATE giang_vien SET ";
-    foreach ($data_to_update as $key => $value) {
-        $sql .= "$key = '$value', ";
-    }
-    $sql = rtrim($sql, ', ') . " WHERE giang_vien_id = $instructor_id";
+    $db->where('giang_vien_id', $instructor_id);
+    $status = $db->update('giang_vien', $data_to_update);
 
-    $result = $db->query($sql);
-
-    if ($result) {
+    if ($status) {
         $_SESSION['success'] = "Giảng viên đã được cập nhật thành công!";
         header('location: giang_vien.php');
         exit();
+    } else {
+        $_SESSION['failure'] = "Cập nhật giảng viên không thành công";
     }
 }
 
@@ -57,5 +54,37 @@ include_once 'includes/header.php';
         ?>
     </form>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#instructor_form").validate({
+            rules: {
+                ngay_vao_dao_tao: {
+                    required: true,
+                    date: true
+                },
+                chuyen_mon: {
+                    required: true
+                },
+                trinh_do_hoc_van: {
+                    required: false
+                },
+                kinh_nghiem_giang_day: {
+                    required: false,
+                    number: true
+                },
+                noi_cong_tac: {
+                    required: false
+                },
+                dia_chi: {
+                    required: false
+                },
+                tai_khoan_id: {
+                    required: true
+                }
+            }
+        });
+    });
+</script>
 
 <?php include_once 'includes/footer.php'; ?>

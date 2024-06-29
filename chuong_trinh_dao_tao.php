@@ -43,9 +43,10 @@ foreach ($rows as $row) {
     if ($dang_ky) {
         $trang_thai_dang_ky[$row['chuong_trinh_id']] = $dang_ky['trang_thai'];
     } else {
-        $trang_thai_dang_ky[$row['chuong_trinh_id']] = 'Chờ duyệt';
+        $trang_thai_dang_ky[$row['chuong_trinh_id']] = 'Chưa đăng ký';
     }
 }
+
 
 include BASE_PATH . '/includes/header.php';
 ?>
@@ -104,6 +105,9 @@ include BASE_PATH . '/includes/header.php';
                 <th width="20%">Đối tượng</th>
                 <th width="20%">Thời lượng</th>
                 <th width="10%">Hình thức</th>
+                <?php if ($role == 'NhanVien'): ?>
+                <th width="10%">Trạng thái</th>
+                <?php endif; ?>
                 <th width="10%">Hành động</th>
             </tr>
         </thead>
@@ -115,6 +119,10 @@ include BASE_PATH . '/includes/header.php';
                 <td><?php echo xss_clean($row['doi_tuong']); ?></td>
                 <td><?php echo xss_clean($row['thoi_luong']); ?></td>
                 <td><?php echo xss_clean($row['hinh_thuc']); ?></td>
+                <?php if ($role == 'NhanVien'): ?>
+                <td><?php echo isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) ? xss_clean($trang_thai_dang_ky[$row['chuong_trinh_id']]) : 'Chờ duyệt'; ?>
+                </td>
+                <?php endif; ?>
                 <td>
                     <div class="flex">
                         <?php if ($role == 'QuanTriVien'): ?>
@@ -129,6 +137,9 @@ include BASE_PATH . '/includes/header.php';
                         <?php if (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Đã duyệt'): ?>
                         <a href="chi_tiet_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
                             class="btn btn-info"><i class="glyphicon glyphicon-info-sign"></i> Xem chi tiết</a>
+                        <?php elseif (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Chờ duyệt'): ?>
+                        <a href="#" class="btn btn-success btn-disabled"><i class="glyphicon glyphicon-plus"></i> Đăng
+                            ký đào tạo</a>
                         <?php else: ?>
                         <a href="them_dang_ky_dao_tao.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
                             class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Đăng ký đào tạo</a>
@@ -155,8 +166,7 @@ include BASE_PATH . '/includes/header.php';
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-default pull-left">Có</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                            </div>
-                        </div>
+                            </div </div>
                     </form>
                 </div>
             </div>

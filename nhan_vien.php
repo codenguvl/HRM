@@ -59,7 +59,7 @@ include BASE_PATH . '/includes/header.php';
         </div>
         <div class="col-lg-6">
             <div class="page-action-links text-right">
-                <a href="them_tai_khoan.php?operation=create" class="btn btn-success"><i
+                <a href="them_nhan_vien.php?operation=create" class="btn btn-success"><i
                         class="glyphicon glyphicon-plus"></i> Thêm mới</a>
             </div>
         </div>

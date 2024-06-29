@@ -16,7 +16,7 @@ $accounts = getGiangVienAccountList();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_filter($_POST);
 
-    $required_fields = array('ten', 'chuyen_mon', 'thong_tin_lien_he');
+    $required_fields = array('ngay_vao_dao_tao', 'chuyen_mon', 'tai_khoan_id');
     foreach ($required_fields as $field) {
         if (empty($data_to_store[$field])) {
             echo 'Missing required field: ' . $field;
@@ -30,14 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "INSERT INTO giang_vien (ten, chuyen_mon, thong_tin_lien_he) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO giang_vien (ngay_vao_dao_tao, chuyen_mon, trinh_do_hoc_van, kinh_nghiem_giang_day, noi_cong_tac, dia_chi, tai_khoan_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
     if ($stmt === false) {
         echo 'Error preparing statement: ' . $conn->error;
         exit();
     }
-    $stmt->bind_param("sss", $data_to_store['ten'], $data_to_store['chuyen_mon'], $data_to_store['thong_tin_lien_he']);
+    $stmt->bind_param("sssissi", $data_to_store['ngay_vao_dao_tao'], $data_to_store['chuyen_mon'], $data_to_store['trinh_do_hoc_van'], $data_to_store['kinh_nghiem_giang_day'], $data_to_store['noi_cong_tac'], $data_to_store['dia_chi'], $data_to_store['tai_khoan_id']);
 
     if ($stmt->execute() === true) {
         $_SESSION['success'] = "Giảng viên đã được thêm thành công!";
@@ -71,16 +71,28 @@ require_once 'includes/header.php';
     $(document).ready(function () {
         $("#instructor_form").validate({
             rules: {
-                ten: {
+                ngay_vao_dao_tao: {
                     required: true,
-                    minlength: 3
+                    date: true
                 },
                 chuyen_mon: {
                     required: true
                 },
-                thong_tin_lien_he: {
-                    required: true,
-                    minlength: 10
+                trinh_do_hoc_van: {
+                    required: false
+                },
+                kinh_nghiem_giang_day: {
+                    required: false,
+                    number: true
+                },
+                noi_cong_tac: {
+                    required: false
+                },
+                dia_chi: {
+                    required: false
+                },
+                tai_khoan_id: {
+                    required: true
                 }
             }
         });

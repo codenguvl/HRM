@@ -3,7 +3,6 @@ session_start();
 require_once 'config/config.php';
 require_once BASE_PATH . '/includes/auth_validate.php';
 
-
 $role = $_SESSION['user_role'];
 $tai_khoan_id = $_SESSION['id_tai_khoan'];
 
@@ -24,13 +23,11 @@ if (!$order_by) {
     $order_by = 'Desc';
 }
 
-// Connect to database
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if ($conn->connect_error) {
     die("Kết nối thất bại: " . $conn->connect_error);
 }
 
-// Get giang_vien_id from tai_khoan_id
 $giang_vien_id = null;
 if ($role == 'GiangVien') {
     $stmt = $conn->prepare("SELECT giang_vien_id FROM giang_vien WHERE tai_khoan_id = ?");
@@ -47,15 +44,14 @@ if ($role == 'GiangVien') {
     $stmt->close();
 }
 
-// Base SQL query
-$sql = "SELECT lich_trinh_dao_tao.lich_trinh_id, lich_trinh_dao_tao.chuong_trinh_id, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc, lich_trinh_dao_tao.dia_diem FROM lich_trinh_dao_tao";
+$sql = "SELECT lich_trinh_dao_tao.lich_trinh_id, chuong_trinh_dao_tao.ten_chuong_trinh, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc, lich_trinh_dao_tao.dia_diem 
+        FROM lich_trinh_dao_tao 
+        JOIN chuong_trinh_dao_tao ON lich_trinh_dao_tao.chuong_trinh_id = chuong_trinh_dao_tao.chuong_trinh_id";
 
-// If the user is a GiangVien, modify the query to only show their assigned training programs
 if ($role == 'GiangVien' && $giang_vien_id !== null) {
     $sql .= " JOIN phan_cong_giang_vien ON lich_trinh_dao_tao.chuong_trinh_id = phan_cong_giang_vien.chuong_trinh_id WHERE phan_cong_giang_vien.giang_vien_id = ?";
 }
 
-// Add search and order conditions
 if ($search_string) {
     $sql .= ($role == 'GiangVien' && $giang_vien_id !== null) ? " AND" : " WHERE";
     $sql .= " lich_trinh_dao_tao.dia_diem LIKE ?";
@@ -63,7 +59,6 @@ if ($search_string) {
 
 $sql .= " ORDER BY $filter_col $order_by LIMIT ?, ?";
 
-// Prepare and execute the query
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     die("Lỗi khi chuẩn bị câu lệnh: " . $conn->error);
@@ -91,7 +86,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-// Count total rows for pagination
 $count_sql = "SELECT COUNT(*) as count FROM lich_trinh_dao_tao";
 if ($role == 'GiangVien' && $giang_vien_id !== null) {
     $count_sql .= " JOIN phan_cong_giang_vien ON lich_trinh_dao_tao.chuong_trinh_id = phan_cong_giang_vien.chuong_trinh_id WHERE phan_cong_giang_vien.giang_vien_id = ?";
@@ -191,48 +185,48 @@ include BASE_PATH . '/includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-            <tr>
-                <td><?php echo $row['lich_trinh_id']; ?></td>
-                <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
-                <td><?php echo xss_clean($row['ngay_bat_dau']); ?></td>
-                <td><?php echo xss_clean($row['ngay_ket_thuc']); ?></td>
-                <td><?php echo xss_clean($row['dia_diem']); ?></td>
-                <td>
-                    <?php if ($role == 'QuanTriVien'): ?>
-                    <a href="sua_lich_trinh_dao_tao.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>&operation=edit"
-                        class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                    <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                        data-target="#confirm-delete-<?php echo $row['lich_trinh_id']; ?>"><i
-                            class="glyphicon glyphicon-trash"></i></a>
-                    <?php endif; ?>
-                    <?php if ($role == 'GiangVien'): ?>
-                    <a href="xem_chi_tiet.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>"
-                        class="btn btn-info"><i class="glyphicon glyphicon-eye-open"></i> Xem chi tiết</a>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="confirm-delete-<?php echo $row['lich_trinh_id']; ?>" role="dialog">
-                <div class="modal-dialog">
-                    <form action="xoa_lich_trinh_dao_tao.php" method="POST">
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Xác nhận xóa</h4>
+                <tr>
+                    <td><?php echo $row['lich_trinh_id']; ?></td>
+                    <td><?php echo xss_clean($row['ten_chuong_trinh']); ?></td>
+                    <td><?php echo xss_clean($row['ngay_bat_dau']); ?></td>
+                    <td><?php echo xss_clean($row['ngay_ket_thuc']); ?></td>
+                    <td><?php echo xss_clean($row['dia_diem']); ?></td>
+                    <td>
+                        <?php if ($role == 'QuanTriVien'): ?>
+                            <a href="sua_lich_trinh_dao_tao.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>&operation=edit"
+                                class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                            <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
+                                data-target="#confirm-delete-<?php echo $row['lich_trinh_id']; ?>"><i
+                                    class="glyphicon glyphicon-trash"></i></a>
+                        <?php endif; ?>
+                        <?php if ($role == 'GiangVien'): ?>
+                            <a href="xem_chi_tiet.php?lich_trinh_id=<?php echo $row['lich_trinh_id']; ?>"
+                                class="btn btn-info"><i class="glyphicon glyphicon-eye-open"></i> Xem chi tiết</a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="confirm-delete-<?php echo $row['lich_trinh_id']; ?>" role="dialog">
+                    <div class="modal-dialog">
+                        <form action="xoa_lich_trinh_dao_tao.php" method="POST">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Xác nhận xóa</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Bạn có chắc chắn muốn xóa lịch trình đào tạo này?</p>
+                                    <input type="hidden" name="lich_trinh_id" value="<?php echo $row['lich_trinh_id']; ?>">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                                    <button type="submit" class="btn btn-danger">Xóa</button>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                <p>Bạn có chắc chắn muốn xóa lịch trình đào tạo này?</p>
-                                <input type="hidden" name="lich_trinh_id" value="<?php echo $row['lich_trinh_id']; ?>">
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
-                                <button type="submit" class="btn btn-danger">Xóa</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </tbody>
     </table>

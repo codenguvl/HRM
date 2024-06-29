@@ -8,6 +8,10 @@ if ($role != 'GiangVien' && $role != 'QuanTriVien' && $role != 'NhanVien') {
     die('Bạn không có quyền truy cập vào trang này.');
 }
 
+if ($role == 'NhanVien') {
+    $chuong_trinh_id = filter_input(INPUT_GET, 'chuong_trinh_dao_tao', FILTER_VALIDATE_INT);
+}
+
 $nhan_vien_id = filter_input(INPUT_GET, 'nhan_vien_id', FILTER_VALIDATE_INT);
 if (!$nhan_vien_id) {
     die('ID nhân viên không hợp lệ.');
@@ -17,43 +21,97 @@ $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 if ($conn->connect_error) {
     die("Kết nối thất bại: " . $conn->connect_error);
 }
+if ($role == 'NhanVien') {
+    $chuong_trinh_id = filter_input(INPUT_GET, 'chuong_trinh_dao_tao', FILTER_VALIDATE_INT);
+    if (!$chuong_trinh_id) {
+        die('ID chương trình đào tạo không hợp lệ.');
+    }
 
-$sql_program = "SELECT chuong_trinh_dao_tao.*, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc 
-                FROM dang_ky_dao_tao 
-                JOIN chuong_trinh_dao_tao ON dang_ky_dao_tao.chuong_trinh_id = chuong_trinh_dao_tao.chuong_trinh_id 
-                JOIN lich_trinh_dao_tao ON dang_ky_dao_tao.chuong_trinh_id = lich_trinh_dao_tao.chuong_trinh_id 
-                WHERE dang_ky_dao_tao.tai_khoan_id = ? 
-                ORDER BY lich_trinh_dao_tao.ngay_bat_dau DESC 
-                LIMIT 1";
+    // Query program details based on $chuong_trinh_id
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    if ($conn->connect_error) {
+        die("Kết nối thất bại: " . $conn->connect_error);
+    }
 
-$stmt_program = $conn->prepare($sql_program);
-$stmt_program->bind_param("i", $nhan_vien_id);
-$stmt_program->execute();
-$result_program = $stmt_program->get_result();
-$program = $result_program->fetch_assoc();
-$stmt_program->close();
+    $sql_program = "SELECT chuong_trinh_dao_tao.*, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc 
+                    FROM chuong_trinh_dao_tao 
+                    LEFT JOIN lich_trinh_dao_tao 
+                    ON chuong_trinh_dao_tao.chuong_trinh_id = lich_trinh_dao_tao.chuong_trinh_id 
+                    WHERE chuong_trinh_dao_tao.chuong_trinh_id = ?";
 
-if (!$program) {
-    die('Không tìm thấy chương trình đào tạo.');
+    $stmt_program = $conn->prepare($sql_program);
+    $stmt_program->bind_param("i", $chuong_trinh_id);
+    $stmt_program->execute();
+    $result_program = $stmt_program->get_result();
+    $program = $result_program->fetch_assoc();
+    $stmt_program->close();
+
+    if (!$program) {
+        die('Không tìm thấy chương trình đào tạo.');
+    }
+
+    // Query contents based on $chuong_trinh_id
+    $sql_contents = "SELECT noi_dung_dao_tao.*, 
+                            IFNULL(tien_do_hoc_tap.trang_thai, 'Chưa hoàn thành') AS trang_thai_tien_do
+                     FROM noi_dung_dao_tao 
+                     LEFT JOIN tien_do_hoc_tap 
+                     ON noi_dung_dao_tao.noi_dung_id = tien_do_hoc_tap.noi_dung_id 
+                     AND tien_do_hoc_tap.nhan_vien_id = ? 
+                     WHERE noi_dung_dao_tao.chuong_trinh_id = ?";
+
+    $stmt_contents = $conn->prepare($sql_contents);
+    $stmt_contents->bind_param("ii", $nhan_vien_id, $chuong_trinh_id);
+    $stmt_contents->execute();
+    $result_contents = $stmt_contents->get_result();
+    $contents = $result_contents->fetch_all(MYSQLI_ASSOC);
+    $stmt_contents->close();
+
+    $conn->close();
+} else {
+    // For GiangVien and QuanTriVien roles, query the latest program for the employee
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    if ($conn->connect_error) {
+        die("Kết nối thất bại: " . $conn->connect_error);
+    }
+
+    $sql_program = "SELECT chuong_trinh_dao_tao.*, lich_trinh_dao_tao.ngay_bat_dau, lich_trinh_dao_tao.ngay_ket_thuc 
+                    FROM dang_ky_dao_tao 
+                    JOIN chuong_trinh_dao_tao ON dang_ky_dao_tao.chuong_trinh_id = chuong_trinh_dao_tao.chuong_trinh_id 
+                    JOIN lich_trinh_dao_tao ON dang_ky_dao_tao.chuong_trinh_id = lich_trinh_dao_tao.chuong_trinh_id 
+                    WHERE dang_ky_dao_tao.tai_khoan_id = ? 
+                    ORDER BY lich_trinh_dao_tao.ngay_bat_dau DESC 
+                    LIMIT 1";
+
+    $stmt_program = $conn->prepare($sql_program);
+    $stmt_program->bind_param("i", $nhan_vien_id);
+    $stmt_program->execute();
+    $result_program = $stmt_program->get_result();
+    $program = $result_program->fetch_assoc();
+    $stmt_program->close();
+
+    if (!$program) {
+        die('Không tìm thấy chương trình đào tạo.');
+    }
+
+    // Query contents based on $program['chuong_trinh_id']
+    $sql_contents = "SELECT noi_dung_dao_tao.*, 
+                            IFNULL(tien_do_hoc_tap.trang_thai, 'Chưa hoàn thành') AS trang_thai_tien_do
+                     FROM noi_dung_dao_tao 
+                     LEFT JOIN tien_do_hoc_tap 
+                     ON noi_dung_dao_tao.noi_dung_id = tien_do_hoc_tap.noi_dung_id 
+                     AND tien_do_hoc_tap.nhan_vien_id = ? 
+                     WHERE noi_dung_dao_tao.chuong_trinh_id = ?";
+
+    $stmt_contents = $conn->prepare($sql_contents);
+    $stmt_contents->bind_param("ii", $nhan_vien_id, $program['chuong_trinh_id']);
+    $stmt_contents->execute();
+    $result_contents = $stmt_contents->get_result();
+    $contents = $result_contents->fetch_all(MYSQLI_ASSOC);
+    $stmt_contents->close();
+
+    $conn->close();
 }
 
-
-$sql_contents = "SELECT noi_dung_dao_tao.*, 
-                        IFNULL(tien_do_hoc_tap.trang_thai, 'Chưa hoàn thành') AS trang_thai_tien_do
-                 FROM noi_dung_dao_tao 
-                 LEFT JOIN tien_do_hoc_tap 
-                 ON noi_dung_dao_tao.noi_dung_id = tien_do_hoc_tap.noi_dung_id 
-                 AND tien_do_hoc_tap.nhan_vien_id = ? 
-                 WHERE noi_dung_dao_tao.chuong_trinh_id = ?";
-
-$stmt_contents = $conn->prepare($sql_contents);
-$stmt_contents->bind_param("ii", $nhan_vien_id, $program['chuong_trinh_id']);
-$stmt_contents->execute();
-$result_contents = $stmt_contents->get_result();
-$contents = $result_contents->fetch_all(MYSQLI_ASSOC);
-$stmt_contents->close();
-
-$conn->close();
 
 include BASE_PATH . '/includes/header.php';
 ?>

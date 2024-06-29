@@ -9,7 +9,6 @@ if (!$chuong_trinh_id) {
     exit;
 }
 
-
 $db = getDbInstance();
 
 $db->where('chuong_trinh_id', $chuong_trinh_id);
@@ -19,9 +18,14 @@ if (!$chuong_trinh) {
     exit;
 }
 
-
 $db->where('chuong_trinh_id', $chuong_trinh_id);
 $noi_dung_list = $db->get('noi_dung_dao_tao');
+
+// Thay đổi câu truy vấn để lấy thông tin giảng viên và tên từ bảng tai_khoan
+$db->join('giang_vien gv', 'pgv.giang_vien_id = gv.giang_vien_id', 'LEFT');
+$db->join('tai_khoan tk', 'gv.tai_khoan_id = tk.id_tai_khoan', 'LEFT');
+$db->where('pgv.chuong_trinh_id', $chuong_trinh_id);
+$giang_vien_list = $db->get('phan_cong_giang_vien pgv', null, 'gv.*, tk.ten as ten_giang_vien');
 
 $nhan_vien_id = $_SESSION['id_tai_khoan'];
 
@@ -66,6 +70,53 @@ include BASE_PATH . '/includes/header.php';
         </div>
     </div>
 
+    <?php if (empty($giang_vien_list)): ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Thông tin giảng viên
+            </div>
+            <div class="panel-body">
+                <p class="text-center">Khóa học này chưa được phân công cho giảng viên nào.</p>
+            </div>
+        </div>
+    <?php else: ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Thông tin giảng viên
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>Ngày vào đào tạo</th>
+                            <th>Chuyên môn</th>
+                            <th>Trình độ học vấn</th>
+                            <th>Kinh nghiệm giảng dạy</th>
+                            <th>Nơi công tác</th>
+                            <th>Địa chỉ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($giang_vien_list as $giang_vien): ?>
+                            <tr>
+                                <td><?php echo xss_clean($giang_vien['giang_vien_id']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['ten_giang_vien']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['ngay_vao_dao_tao']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['chuyen_mon']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['trinh_do_hoc_van']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['kinh_nghiem_giang_day']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['noi_cong_tac']); ?></td>
+                                <td><?php echo xss_clean($giang_vien['dia_chi']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="panel panel-default">
         <div class="panel-heading">
             Nội dung đào tạo
@@ -108,7 +159,8 @@ include BASE_PATH . '/includes/header.php';
 
     <div class="text-right">
         <a href="chuong_trinh_dao_tao.php" class="btn btn-default">Quay lại</a>
-        <a href="xem_tien_do_hoc_vien.php?nhan_vien_id=<?php echo $nhan_vien_id; ?>" class="btn btn-primary">Xem tiến độ
+        <a href="xem_tien_do_hoc_vien.php?nhan_vien_id=<?php echo $nhan_vien_id; ?>&chuong_trinh_dao_tao=<?php echo $chuong_trinh_id; ?>"
+            class="btn btn-primary">Xem tiến độ
             học tập</a>
     </div>
 </div>
