@@ -124,7 +124,7 @@ require_once 'includes/header.php';
                     <option value="GiangVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'GiangVien') ? 'selected' : ''; ?>>
                         Giảng viên</option>
                     <option value="QuanTriVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'QuanTriVien') ? 'selected' : ''; ?>>
-                        Giảng viên</option>
+                        Quản trị viên</option>
                 </select>
             </div>
 
