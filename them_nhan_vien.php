@@ -119,11 +119,11 @@ require_once 'includes/header.php';
             <div class="form-group">
                 <label for="vai_tro">Vai trò *</label>
                 <select name="vai_tro" class="form-control" required="required" id="vai_tro">
-                    <option value="NhanVien"
-                        <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'NhanVien') ? 'selected' : ''; ?>>
+                    <option value="NhanVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'NhanVien') ? 'selected' : ''; ?>>
                         Nhân viên</option>
-                    <option value="GiangVien"
-                        <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'GiangVien') ? 'selected' : ''; ?>>
+                    <option value="GiangVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'GiangVien') ? 'selected' : ''; ?>>
+                        Giảng viên</option>
+                    <option value="QuanTriVien" <?php echo (isset($_POST['vai_tro']) && $_POST['vai_tro'] === 'QuanTriVien') ? 'selected' : ''; ?>>
                         Giảng viên</option>
                 </select>
             </div>
@@ -152,40 +152,40 @@ require_once 'includes/header.php';
 </div>
 
 <script type="text/javascript">
-$(document).ready(function() {
-    $("#employee_form").validate({
-        rules: {
-            ten: {
-                required: true,
-                minlength: 3
-            },
-            phong_ban: {
-                required: true
-            },
-            vi_tri: {
-                required: true
-            },
-            email: {
-                required: true,
-                email: true
-            },
-            so_dien_thoai: {
-                digits: true,
-                minlength: 10
-            },
-            vai_tro: {
-                required: true
-            },
-            ten_dang_nhap: {
-                required: true
-            },
-            mat_khau: {
-                required: true,
-                minlength: 6
+    $(document).ready(function () {
+        $("#employee_form").validate({
+            rules: {
+                ten: {
+                    required: true,
+                    minlength: 3
+                },
+                phong_ban: {
+                    required: true
+                },
+                vi_tri: {
+                    required: true
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                so_dien_thoai: {
+                    digits: true,
+                    minlength: 10
+                },
+                vai_tro: {
+                    required: true
+                },
+                ten_dang_nhap: {
+                    required: true
+                },
+                mat_khau: {
+                    required: true,
+                    minlength: 6
+                }
             }
-        }
+        });
     });
-});
 </script>
 
 <?php include_once 'includes/footer.php'; ?>
