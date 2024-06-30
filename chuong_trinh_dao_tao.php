@@ -58,10 +58,10 @@ include BASE_PATH . '/includes/header.php';
         </div>
         <div class="col-lg-6">
             <?php if ($role == 'QuanTriVien'): ?>
-            <div class="page-action-links text-right">
-                <a href="them_chuong_trinh.php?operation=create" class="btn btn-success"><i
-                        class="glyphicon glyphicon-plus"></i> Thêm mới</a>
-            </div>
+                <div class="page-action-links text-right">
+                    <a href="them_chuong_trinh.php?operation=create" class="btn btn-success"><i
+                            class="glyphicon glyphicon-plus"></i> Thêm mới</a>
+                </div>
             <?php endif; ?>
         </div>
     </div>
@@ -91,10 +91,12 @@ include BASE_PATH . '/includes/header.php';
     <hr>
     <!-- //Filters -->
 
-    <div id="export-section">
-        <a href="xuat_chuong_trinh.php"><button class="btn btn-sm btn-primary">Xuất CSV <i
-                    class="glyphicon glyphicon-export"></i></button></a>
-    </div>
+    <?php if ($role == 'QuanTriVien' || $role == 'GiangVien'): ?>
+        <div id="export-section">
+            <a href="xuat_chuong_trinh.php"><button class="btn btn-sm btn-primary">Xuất CSV <i
+                        class="glyphicon glyphicon-export"></i></button></a>
+        </div>
+    <?php endif; ?>
 
     <!-- Table -->
     <table class="table table-striped table-bordered table-condensed">
@@ -106,71 +108,71 @@ include BASE_PATH . '/includes/header.php';
                 <th width="20%">Thời lượng</th>
                 <th width="10%">Hình thức</th>
                 <?php if ($role == 'NhanVien'): ?>
-                <th width="10%">Trạng thái</th>
+                    <th width="10%">Trạng thái</th>
                 <?php endif; ?>
                 <th width="10%">Hành động</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-            <tr>
-                <td><?php echo $row['chuong_trinh_id']; ?></td>
-                <td><?php echo xss_clean($row['ten_chuong_trinh']); ?></td>
-                <td><?php echo xss_clean($row['doi_tuong']); ?></td>
-                <td><?php echo xss_clean($row['thoi_luong']); ?></td>
-                <td><?php echo xss_clean($row['hinh_thuc']); ?></td>
-                <?php if ($role == 'NhanVien'): ?>
-                <td><?php echo isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) ? xss_clean($trang_thai_dang_ky[$row['chuong_trinh_id']]) : 'Chờ duyệt'; ?>
-                </td>
-                <?php endif; ?>
-                <td>
-                    <div class="flex">
-                        <?php if ($role == 'QuanTriVien'): ?>
-                        <a href="sua_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>&operation=edit"
-                            class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                        <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                            data-target="#confirm-delete-<?php echo $row['chuong_trinh_id']; ?>"><i
-                                class="glyphicon glyphicon-trash"></i></a>
-                        <?php endif; ?>
+                <tr>
+                    <td><?php echo $row['chuong_trinh_id']; ?></td>
+                    <td><?php echo xss_clean($row['ten_chuong_trinh']); ?></td>
+                    <td><?php echo xss_clean($row['doi_tuong']); ?></td>
+                    <td><?php echo xss_clean($row['thoi_luong']); ?></td>
+                    <td><?php echo xss_clean($row['hinh_thuc']); ?></td>
+                    <?php if ($role == 'NhanVien'): ?>
+                        <td><?php echo isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) ? xss_clean($trang_thai_dang_ky[$row['chuong_trinh_id']]) : 'Chờ duyệt'; ?>
+                        </td>
+                    <?php endif; ?>
+                    <td>
+                        <div class="flex">
+                            <?php if ($role == 'QuanTriVien'): ?>
+                                <a href="sua_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>&operation=edit"
+                                    class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                                <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
+                                    data-target="#confirm-delete-<?php echo $row['chuong_trinh_id']; ?>"><i
+                                        class="glyphicon glyphicon-trash"></i></a>
+                            <?php endif; ?>
 
-                        <?php if ($role == 'NhanVien'): ?>
-                        <?php if (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Đã duyệt'): ?>
-                        <a href="chi_tiet_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
-                            class="btn btn-info"><i class="glyphicon glyphicon-info-sign"></i> Xem chi tiết</a>
-                        <?php elseif (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Chờ duyệt'): ?>
-                        <a href="#" class="btn btn-success btn-disabled"><i class="glyphicon glyphicon-plus"></i> Đăng
-                            ký đào tạo</a>
-                        <?php else: ?>
-                        <a href="them_dang_ky_dao_tao.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
-                            class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Đăng ký đào tạo</a>
-                        <?php endif; ?>
-                        <?php endif; ?>
+                            <?php if ($role == 'NhanVien'): ?>
+                                <?php if (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Đã duyệt'): ?>
+                                    <a href="chi_tiet_chuong_trinh.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
+                                        class="btn btn-info"><i class="glyphicon glyphicon-info-sign"></i> Xem chi tiết</a>
+                                <?php elseif (isset($trang_thai_dang_ky[$row['chuong_trinh_id']]) && $trang_thai_dang_ky[$row['chuong_trinh_id']] == 'Chờ duyệt'): ?>
+                                    <a href="#" class="btn btn-success btn-disabled"><i class="glyphicon glyphicon-plus"></i> Đăng
+                                        ký đào tạo</a>
+                                <?php else: ?>
+                                    <a href="them_dang_ky_dao_tao.php?chuong_trinh_id=<?php echo $row['chuong_trinh_id']; ?>"
+                                        class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Đăng ký đào tạo</a>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="confirm-delete-<?php echo $row['chuong_trinh_id']; ?>" role="dialog">
+                    <div class="modal-dialog">
+                        <form action="xoa_chuong_trinh.php" method="POST">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Xác nhận</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="del_id" id="del_id"
+                                        value="<?php echo $row['chuong_trinh_id']; ?>">
+                                    <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-default pull-left">Có</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                                </div </div>
+                        </form>
                     </div>
-                </td>
-            </tr>
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="confirm-delete-<?php echo $row['chuong_trinh_id']; ?>" role="dialog">
-                <div class="modal-dialog">
-                    <form action="xoa_chuong_trinh.php" method="POST">
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Xác nhận</h4>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="del_id" id="del_id"
-                                    value="<?php echo $row['chuong_trinh_id']; ?>">
-                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-default pull-left">Có</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                            </div </div>
-                    </form>
                 </div>
-            </div>
-            <!-- //Delete Confirmation Modal -->
+                <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>

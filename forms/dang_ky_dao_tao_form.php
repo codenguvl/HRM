@@ -19,7 +19,6 @@
             placeholder="Chương trình ID" class="form-control" required="required" id="chuong_trinh_id" hidden>
     </div>
 
-
     <div class="form-group">
         <label for="ngay_dang_ky">Ngày đăng ký *</label>
         <input type="date" name="ngay_dang_ky"
@@ -27,14 +26,12 @@
             class="form-control" required="required" id="ngay_dang_ky" readonly>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" style="display: none;">
         <label for="trang_thai">Trạng thái *</label>
         <select name="trang_thai" class="form-control" required="required" id="trang_thai" readonly>
             <option value="Chờ duyệt" selected>Chờ duyệt</option>
-            <option value="Đã duyệt">Đã duyệt</option>
         </select>
     </div>
-
 
     <div class="form-group text-center">
         <label></label>

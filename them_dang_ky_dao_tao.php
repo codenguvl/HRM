@@ -8,6 +8,7 @@ $chuong_trinh_id = filter_input(INPUT_GET, 'chuong_trinh_id', FILTER_SANITIZE_NU
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_to_store = array_map('htmlspecialchars', $_POST);
     $data_to_store['nhan_vien_id'] = (int) $_SESSION['id_tai_khoan'];
+    $data_to_store['trang_thai'] = 'Chờ duyệt';
 
     $required_fields = array('nhan_vien_id', 'chuong_trinh_id', 'ngay_dang_ky', 'trang_thai');
     foreach ($required_fields as $field) {
@@ -17,8 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
     }
-
-    $data_to_store['nhan_vien_id'] = (int) $_SESSION['id_tai_khoan'];
 
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
@@ -77,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $conn->close();
     }
 }
+
 
 $edit = false;
 

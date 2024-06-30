@@ -35,6 +35,59 @@ $db->pageLimit = $pagelimit;
 $rows = $db->arraybuilder()->paginate('danh_gia_dao_tao', $page, $select);
 $total_pages = $db->totalPages;
 
+function getTenNhanVien($nhan_vien_id)
+{
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
+    if ($conn->connect_error) {
+        die("Kết nối thất bại: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT ten FROM tai_khoan WHERE id_tai_khoan = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        die('Lỗi khi chuẩn bị câu lệnh: ' . $conn->error);
+    }
+
+    $stmt->bind_param("i", $nhan_vien_id);
+    $stmt->execute();
+    $stmt->bind_result($ten_nhan_vien);
+    $stmt->fetch();
+
+    $stmt->close();
+    $conn->close();
+
+    return $ten_nhan_vien ? $ten_nhan_vien : 'Không xác định';
+}
+
+function getTenChuongTrinh($chuong_trinh_id)
+{
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
+    if ($conn->connect_error) {
+        die("Kết nối thất bại: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT ten_chuong_trinh FROM chuong_trinh_dao_tao WHERE chuong_trinh_id = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        die('Lỗi khi chuẩn bị câu lệnh: ' . $conn->error);
+    }
+
+    $stmt->bind_param("i", $chuong_trinh_id);
+    $stmt->execute();
+    $stmt->bind_result($ten_chuong_trinh);
+    $stmt->fetch();
+
+    $stmt->close();
+    $conn->close();
+
+    return $ten_chuong_trinh ? $ten_chuong_trinh : 'Không xác định';
+}
+
+
 include BASE_PATH . '/includes/header.php';
 ?>
 <!-- Main container -->
@@ -89,18 +142,22 @@ include BASE_PATH . '/includes/header.php';
     <hr>
     <!-- //Filters -->
 
+
+
+    <?php if ($role == 'QuanTriVien' || $role == 'GiangVien'): ?>
     <div id="export-section">
         <a href="xuat_danh_gia_dao_tao.php"><button class="btn btn-sm btn-primary">Xuất CSV <i
                     class="glyphicon glyphicon-export"></i></button></a>
     </div>
+    <?php endif; ?>
 
     <!-- Table -->
     <table class="table table-striped table-bordered table-condensed">
         <thead>
             <tr>
                 <th width="5%">ID</th>
-                <th width="15%">Nhân viên ID</th>
-                <th width="15%">Chương trình ID</th>
+                <th width="15%">Tên nhân viên</th>
+                <th width="15%">Tên chương trình</th>
                 <th width="15%">Loại đánh giá</th>
                 <th width="10%">Điểm đánh giá</th>
                 <th width="30%">Nhận xét</th>
@@ -111,11 +168,11 @@ include BASE_PATH . '/includes/header.php';
             <?php foreach ($rows as $row): ?>
             <tr>
                 <td><?php echo $row['danh_gia_id']; ?></td>
-                <td><?php echo xss_clean($row['nhan_vien_id']); ?></td>
-                <td><?php echo xss_clean($row['chuong_trinh_id']); ?></td>
-                <td><?php echo xss_clean($row['loai_danh_gia']); ?></td>
-                <td><?php echo xss_clean($row['diem_danh_gia']); ?></td>
-                <td><?php echo xss_clean($row['nhan_xet']); ?></td>
+                <td><?php echo htmlspecialchars(getTenNhanVien($row['nhan_vien_id'])); ?></td>
+                <td><?php echo htmlspecialchars(getTenChuongTrinh($row['chuong_trinh_id'])); ?></td>
+                <td><?php echo htmlspecialchars($row['loai_danh_gia']); ?></td>
+                <td><?php echo htmlspecialchars($row['diem_danh_gia']); ?></td>
+                <td><?php echo htmlspecialchars($row['nhan_xet']); ?></td>
                 <td>
                     <?php if ($role == 'NhanVien'): ?>
                     <a href="sua_danh_gia_dao_tao.php?danh_gia_id=<?php echo $row['danh_gia_id']; ?>&operation=edit"
@@ -155,6 +212,7 @@ include BASE_PATH . '/includes/header.php';
         </tbody>
     </table>
     <!-- //Table -->
+
 
     <!-- Pagination -->
     <div class="text-center">

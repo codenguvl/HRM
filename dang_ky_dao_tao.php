@@ -105,49 +105,49 @@ include BASE_PATH . '/includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($rows as $row): ?>
-            <tr>
-                <td><?php echo $row['dang_ky_id']; ?></td>
-                <td><?php echo xss_clean(getUserNameFromTaiKhoanId($row['tai_khoan_id'])); ?></td>
-                <td><?php echo xss_clean(getTenChuongTrinhFromChuongTrinhId($row['chuong_trinh_id'])); ?></td>
-                <td><?php echo xss_clean($row['trang_thai']); ?></td>
-                <td><?php echo xss_clean($row['ngay_dang_ky']); ?></td>
-                <td>
-                    <div class="flex">
-                        <a href="sua_dang_ky_dao_tao.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>&operation=edit"
-                            class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
-                        <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
-                            data-target="#confirm-delete-<?php echo $row['dang_ky_id']; ?>"><i
-                                class="glyphicon glyphicon-trash"></i></a>
-                        <a href="phe_duyet_dang_ky.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>"
-                            class="btn btn-success"><i class="glyphicon glyphicon-check"></i> Phê duyệt</a>
-                    </div>
-                </td>
-
-            </tr>
-            <!-- Delete Confirmation Modal -->
-            <div class="modal fade" id="confirm-delete-<?php echo $row['dang_ky_id']; ?>" role="dialog">
-                <div class="modal-dialog">
-                    <form action="xoa_dang_ky_dao_tao.php" method="POST">
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Xác nhận</h4>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="del_id" id="del_id"
-                                    value="<?php echo $row['dang_ky_id']; ?>">
-                                <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-default pull-left">Có</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
-                            </div>
+                <tr>
+                    <td><?php echo $row['dang_ky_id']; ?></td>
+                    <td><?php echo xss_clean(getUserNameFromTaiKhoanId($row['tai_khoan_id'])); ?></td>
+                    <td><?php echo xss_clean(getTenChuongTrinhFromChuongTrinhId($row['chuong_trinh_id'])); ?></td>
+                    <td><?php echo xss_clean($row['trang_thai']); ?></td>
+                    <td><?php echo xss_clean($row['ngay_dang_ky']); ?></td>
+                    <td>
+                        <div class="flex">
+                            <a href="sua_dang_ky_dao_tao.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>&operation=edit"
+                                class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i></a>
+                            <a href="#" class="btn btn-danger delete_btn" data-toggle="modal"
+                                data-target="#confirm-delete-<?php echo $row['dang_ky_id']; ?>"><i
+                                    class="glyphicon glyphicon-trash"></i></a>
+                            <a href="phe_duyet_dang_ky.php?dang_ky_id=<?php echo $row['dang_ky_id']; ?>"
+                                class="btn btn-success"><i class="glyphicon glyphicon-check"></i> Phê duyệt</a>
                         </div>
-                    </form>
+                    </td>
+
+                </tr>
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="confirm-delete-<?php echo $row['dang_ky_id']; ?>" role="dialog">
+                    <div class="modal-dialog">
+                        <form action="xoa_dang_ky_dao_tao.php" method="POST">
+                            <!-- Modal content -->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Xác nhận</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="del_id" id="del_id"
+                                        value="<?php echo $row['dang_ky_id']; ?>">
+                                    <p>Bạn có chắc chắn muốn xóa hàng này không?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-default pull-left">Có</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Không</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <!-- //Delete Confirmation Modal -->
+                <!-- //Delete Confirmation Modal -->
             <?php endforeach; ?>
         </tbody>
     </table>
