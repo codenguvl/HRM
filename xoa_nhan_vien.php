@@ -15,33 +15,51 @@ if ($del_id && $_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Kết nối thất bại: " . $conn->connect_error);
     }
 
-    $sql = "DELETE FROM taikhoan WHERE id_tai_khoan = ?";
-
-    $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
+    $delete_thong_bao_sql = "DELETE FROM thong_bao WHERE tai_khoan_id = ?";
+    $delete_thong_bao_stmt = $conn->prepare($delete_thong_bao_sql);
+    if ($delete_thong_bao_stmt === false) {
         echo 'Lỗi khi chuẩn bị câu lệnh: ' . $conn->error;
         exit();
     }
-
-    $stmt->bind_param("i", $employee_id);
+    $delete_thong_bao_stmt->bind_param("i", $employee_id);
 
     try {
-        if ($stmt->execute() === true) {
-            $_SESSION['info'] = "Xóa nhân viên thành công!";
-            header('location: employees.php');
-            exit();
-        } else {
-            $_SESSION['failure'] = "Không thể xóa nhân viên";
-            header('location: employees.php');
-            exit();
+        $conn->begin_transaction();
+
+        if (!$delete_thong_bao_stmt->execute()) {
+            throw new Exception("Không thể xóa thông báo liên quan: " . $conn->error);
         }
-    } catch (mysqli_sql_exception $e) {
-        $_SESSION['failure'] = "Đã xảy ra lỗi khi xóa nhân viên: " . $e->getMessage();
-        header('location: employees.php');
-        exit();
+
+        $delete_tai_khoan_sql = "DELETE FROM tai_khoan WHERE id_tai_khoan = ?";
+        $delete_tai_khoan_stmt = $conn->prepare($delete_tai_khoan_sql);
+        if ($delete_tai_khoan_stmt === false) {
+            throw new Exception("Lỗi khi chuẩn bị câu lệnh: " . $conn->error);
+        }
+        $delete_tai_khoan_stmt->bind_param("i", $employee_id);
+
+        if (!$delete_tai_khoan_stmt->execute()) {
+            throw new Exception("Không thể xóa nhân viên: " . $conn->error);
+        }
+
+        $conn->commit();
+        $_SESSION['info'] = "Xóa nhân viên thành công!";
+    } catch (Exception $e) {
+        $conn->rollback();
+
+        if ($e->getCode() == 1451) {
+            $_SESSION['failure'] = "Dữ liệu đang được sử dụng không được phép xóa.";
+        } else {
+            $_SESSION['failure'] = "Đã xảy ra lỗi khi xóa nhân viên: " . $e->getMessage();
+        }
     } finally {
-        $stmt->close();
+        $delete_thong_bao_stmt->close();
+        if (isset($delete_tai_khoan_stmt)) {
+            $delete_tai_khoan_stmt->close();
+        }
         $conn->close();
     }
+
+    header('location: nhan_vien.php');
+    exit();
 }
 ?>
